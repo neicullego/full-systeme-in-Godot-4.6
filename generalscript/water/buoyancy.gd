@@ -6,30 +6,69 @@ extends RigidBody3D
 @export var water_angular_drag := 0.05
 
 @onready var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-@onready var water = $"../Water"
+@onready var water = get_tree().get_first_node_in_group("water")
 
 @onready var probes = $ProbeContainer.get_children()
 
 var submerged := false
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	pass
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
 	pass
 
+# --- NOUVELLE FONCTION : Vérifie si un point 3D est dans une zone sèche ---
+func _is_point_in_dry_zone(pt: Vector3) -> bool:
+	if water and "active_dry_zones" in water:
+		for zone in water.active_dry_zones:
+			if "box_half_size" in zone and zone.box_half_size != Vector3.ZERO:
+				# Passage en coordonnées locales par rapport à la zone sèche
+				var local_pt: Vector3 = zone.global_transform.inverse() * pt
+				var z_type = zone.zone_type if "zone_type" in zone else 0
+				
+				if z_type == 0: # ─── BOX ───
+					if abs(local_pt.x) < zone.box_half_size.x and \
+					   abs(local_pt.y) < zone.box_half_size.y and \
+					   abs(local_pt.z) < zone.box_half_size.z:
+						return true 
+				elif z_type == 1: # ─── SPHERE ───
+					var dx = local_pt.x / zone.box_half_size.x
+					var dy = local_pt.y / zone.box_half_size.y
+					var dz = local_pt.z / zone.box_half_size.z
+					if (dx*dx + dy*dy + dz*dz) < 1.0:
+						return true
+				elif z_type == 2: # ─── CYLINDER (Axe Y) ───
+					var dx = local_pt.x / zone.box_half_size.x
+					var dz = local_pt.z / zone.box_half_size.z
+					if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
+						return true
+	return false
+# --------------------------------------------------------------------------
+
 func _physics_process(_delta):
+	# 1. On vérifie si la référence à l'eau est toujours valide
+	if not is_instance_valid(water):
+		# 2. Si elle a été détruite (changement de scène), on essaie de la retrouver
+		water = get_tree().get_first_node_in_group("water")
+		# 3. Si elle n'existe vraiment plus, on annule la physique pour cette frame
+		if not is_instance_valid(water):
+			return
+
 	submerged = false
 	for p in probes:
-		var depth = water.get_height(p.global_position) - p.global_position.y 
+		var probe_pos = p.global_position
+		
+		# --- MODIFICATION ICI : On ignore la sonde si elle est dans une zone sèche ---
+		if _is_point_in_dry_zone(probe_pos):
+			continue # Passe directement à la sonde suivante sans appliquer de force
+			
+		var depth = water.get_height(probe_pos) - probe_pos.y
 		if depth > 0:
 			submerged = true
-			apply_force(Vector3.UP * float_force * gravity * depth, p.global_position - global_position)
+			apply_force(Vector3.UP * float_force * gravity * depth, probe_pos - global_position)
 
 func _integrate_forces(state: PhysicsDirectBodyState3D):
 	if submerged:
 		state.linear_velocity *=  1 - water_drag
-		state.angular_velocity *= 1 - water_angular_drag 
+		state.angular_velocity *= 1 - water_angular_drag

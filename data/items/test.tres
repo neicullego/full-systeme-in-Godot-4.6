@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://dil0mu1t1mrpf"]
+
+[ext_resource type="Texture2D" uid="uid://bin4yeou0ftcw" path="res://icon.svg" id="1_r481x"]
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="2_d8fwv"]
+
+[resource]
+script = ExtResource("2_d8fwv")
+item_id = "1"
+item_name = "test"
+item_description = "nothing"
+item_image = ExtResource("1_r481x")
+hand_position_offset = Vector3(0, 0.115, 0.02)
+hand_rotation_offset = Vector3(0, -0.175, 0)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

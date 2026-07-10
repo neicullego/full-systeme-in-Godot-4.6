@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="SkinData" format=3 uid="uid://b5wvxvuri6tfa"]
 
-[ext_resource type="Texture2D" uid="uid://b5o8fp8v86c6p" path="res://textures/skin/Capture d'écran 2026-07-09 202053.png" id="1_50xxl"]
+[ext_resource type="Texture2D" uid="uid://dk4l2a7lhhmkm" path="res://textures/skin/Capture d'écran 2026-07-10 142301.png" id="1_50xxl"]
 [ext_resource type="Script" uid="uid://b0pynjcyrs0u0" path="res://generalscript/skin_data.gd" id="1_b7qer"]
 
 [resource]
