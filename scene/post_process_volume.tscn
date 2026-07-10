@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://0n72eklaqfc1"]
+
+[ext_resource type="Script" uid="uid://co7mjca6m4a83" path="res://generalscript/dry_zone.gd" id="1_gouhp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8v73c"]
+size = Vector3(7.291565, 3.3631592, 3.4846191)
+
+[sub_resource type="FogMaterial" id="FogMaterial_gouhp"]
+density = -23.743
+
+[node name="Post Process Volume" type="Node3D" unique_id=2104117676]
+
+[node name="DryZone" type="Area3D" parent="." unique_id=1200408124]
+script = ExtResource("1_gouhp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DryZone" unique_id=1683528079]
+shape = SubResource("BoxShape3D_8v73c")
+
+[node name="FogVolume" type="FogVolume" parent="." unique_id=1394629421]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0071487427, 0.00061035156, -0.010253906)
+size = Vector3(7.2836456, 3.3615723, 3.4892578)
+material = SubResource("FogMaterial_gouhp")

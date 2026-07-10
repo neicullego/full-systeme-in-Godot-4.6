@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://dxfyh4r42vfpu"]
+
+[ext_resource type="Script" uid="uid://dlq3btgi5bv63" path="res://generalscript/ui/pause.gd" id="1_b46p4"]
+[ext_resource type="PackedScene" uid="uid://uifixwkh00rs" path="res://scene/ui/settings.tscn" id="2_wgils"]
+
+[node name="pause" type="Control" unique_id=1263282456]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+script = ExtResource("1_b46p4")
+
+[node name="settings" parent="." unique_id=520180713 instance=ExtResource("2_wgils")]
+visible = false
+
+[node name="pause_menu" type="CanvasLayer" parent="." unique_id=1394233954]
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="pause_menu" unique_id=127183873]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 393.0
+grow_vertical = 2
+size_flags_horizontal = 0
+color = Color(0, 0, 0, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="pause_menu/ColorRect" unique_id=534279492]
+custom_minimum_size = Vector2(171.075, 549.395)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.537506
+offset_top = -278.215
+offset_right = 85.537506
+offset_bottom = 278.215
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 229
+
+[node name="Button" type="Button" parent="pause_menu/ColorRect/VBoxContainer" unique_id=26152785]
+process_mode = 3
+layout_mode = 2
+text = "resume"
+
+[node name="Button2" type="Button" parent="pause_menu/ColorRect/VBoxContainer" unique_id=1341467092]
+process_mode = 3
+layout_mode = 2
+text = "settings"
+
+[node name="Button3" type="Button" parent="pause_menu/ColorRect/VBoxContainer" unique_id=209370146]
+process_mode = 3
+layout_mode = 2
+text = "quit"
+
+[connection signal="pressed" from="settings/HBoxContainer/return/x_button" to="." method="close_menus"]
+[connection signal="pressed" from="pause_menu/ColorRect/VBoxContainer/Button" to="." method="resume_game"]
+[connection signal="pressed" from="pause_menu/ColorRect/VBoxContainer/Button2" to="." method="open_settings"]
+[connection signal="pressed" from="pause_menu/ColorRect/VBoxContainer/Button3" to="." method="quit_game"]
+
+[editable path="settings"]

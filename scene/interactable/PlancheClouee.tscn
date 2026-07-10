@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://d4bo5j37072ge"]
+
+[ext_resource type="Script" uid="uid://5y8jjhq28mp4" path="res://generalscript/planche_clouee.gd" id="1_7etga"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7etga"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wyqg3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7etga"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_7etga"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+
+[node name="PlancheClouee" type="RigidBody3D" unique_id=878546914]
+collision_layer = 14
+collision_mask = 14
+mass = 10.0
+script = ExtResource("1_7etga")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=57164293]
+shape = SubResource("BoxShape3D_7etga")
+
+[node name="Area3D" type="Area3D" parent="." unique_id=759839677]
+transform = Transform3D(1.415, 0, 0, 0, 1.415, 0, 0, 0, 1.415, 0, 0, 0)
+collision_layer = 15
+collision_mask = 15
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=885506544]
+shape = SubResource("BoxShape3D_wyqg3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1874592381]
+mesh = SubResource("BoxMesh_7etga")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1095382470]
+replication_interval = 0.25
+replication_config = SubResource("SceneReplicationConfig_7etga")

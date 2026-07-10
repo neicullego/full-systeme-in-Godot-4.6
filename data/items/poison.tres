@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bitdxijssbsch"]
+
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="1_1qrdr"]
+[ext_resource type="Texture2D" uid="uid://blg0xcx3hb1id" path="res://assets/texture/clique.png" id="1_yopxv"]
+
+[resource]
+script = ExtResource("1_1qrdr")
+item_id = "Poison"
+item_name = "Poison"
+item_image = ExtResource("1_yopxv")
+pickup_scene_path = "res://scene/items/PoisonPickup.tscn"
+item_type = 1
+health_effect = -101.0
+hand_position_offset = Vector3(0.05, 0.115, 0.04)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

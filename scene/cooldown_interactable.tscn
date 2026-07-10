@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://blfp2al5s4tfe"]
+
+[ext_resource type="Script" uid="uid://lvwohiqulanj" path="res://generalscript/cooldown_interactable.gd" id="1_lv6tp"]
+[ext_resource type="Shader" uid="uid://5tlqyg567pkt" path="res://assets/shaders/cooldown_interactable.gdshader" id="2_cgx2v"]
+[ext_resource type="Texture2D" uid="uid://bin4yeou0ftcw" path="res://icon.svg" id="3_dx6gf"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6mrup"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_lv6tp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tu2o0"]
+render_priority = 1
+shader = ExtResource("2_cgx2v")
+shader_parameter/progress = 1.0
+shader_parameter/color = Color(2.0214916e-06, 0.40454477, 0.16349709, 1)
+shader_parameter/inner_radius = 0.35
+shader_parameter/outer_radius = 0.45
+
+[node name="CooldownInteractable" type="StaticBody3D" unique_id=91786948]
+collision_layer = 15
+collision_mask = 15
+script = ExtResource("1_lv6tp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=913924448]
+shape = SubResource("BoxShape3D_6mrup")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=409141096]
+mesh = SubResource("BoxMesh_lv6tp")
+
+[node name="marker_node" type="Marker3D" parent="." unique_id=550386322]
+
+[node name="InteractParticles" type="GPUParticles3D" parent="." unique_id=823595336]
+
+[node name="TimerSprite3D" type="Sprite3D" parent="." unique_id=292864756]
+transform = Transform3D(0.525, 0, 0, 0, 0.525, 0, 0, 0, 0.525, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_tu2o0")
+billboard = 1
+render_priority = 1
+texture = ExtResource("3_dx6gf")

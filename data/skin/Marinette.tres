@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SkinData" format=3 uid="uid://b5wvxvuri6tfa"]
+
+[ext_resource type="Texture2D" uid="uid://b5o8fp8v86c6p" path="res://textures/skin/Capture d'écran 2026-07-09 202053.png" id="1_50xxl"]
+[ext_resource type="Script" uid="uid://b0pynjcyrs0u0" path="res://generalscript/skin_data.gd" id="1_b7qer"]
+
+[resource]
+script = ExtResource("1_b7qer")
+skin_id = "Marinette"
+skin_name = "Marinette"
+preview_image = ExtResource("1_50xxl")
+skin_mesh_node_paths = Array[String](["foot_civile", "torso_civile", "arme_civile", "head_civile", "leg_civile", "neck_civile"])
+metadata/_custom_type_script = "uid://b0pynjcyrs0u0"

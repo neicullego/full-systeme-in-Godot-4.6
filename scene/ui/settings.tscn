@@ -1,0 +1,342 @@
+[gd_scene format=3 uid="uid://uifixwkh00rs"]
+
+[ext_resource type="Script" uid="uid://chdeu0ap46jj8" path="res://generalscript/ui/settings.gd" id="1_pr1wb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pr1wb"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.101960786, 0.101960786, 0.101960786, 0)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="settings" type="CanvasLayer" unique_id=520180713]
+script = ExtResource("1_pr1wb")
+
+[node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=1269478868]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 3
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer" unique_id=1811058601]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="VideoButton" type="Button" parent="HBoxContainer/HBoxContainer" unique_id=1610082371]
+layout_mode = 2
+text = "Video"
+
+[node name="AudioButton" type="Button" parent="HBoxContainer/HBoxContainer" unique_id=537378127]
+layout_mode = 2
+text = "Audio"
+
+[node name="ControlButton" type="Button" parent="HBoxContainer/HBoxContainer" unique_id=712277312]
+layout_mode = 2
+text = "Control"
+
+[node name="Container" type="PanelContainer" parent="HBoxContainer" unique_id=1897873216]
+custom_minimum_size = Vector2(1152, 466)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pr1wb")
+
+[node name="video" type="GridContainer" parent="HBoxContainer/Container" unique_id=788463942]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/v_separation = 16
+columns = 4
+
+[node name="scaling" type="Label" parent="HBoxContainer/Container/video" unique_id=1805866557]
+layout_mode = 2
+text = "scaling slider :"
+
+[node name="scaling_slider" type="HSlider" parent="HBoxContainer/Container/video" unique_id=92589751]
+process_mode = 3
+layout_mode = 2
+min_value = 0.25
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="shadow" type="Label" parent="HBoxContainer/Container/video" unique_id=1124126453]
+layout_mode = 2
+text = "shadow :"
+
+[node name="shadow_button" type="OptionButton" parent="HBoxContainer/Container/video" unique_id=610704886]
+process_mode = 3
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+selected = 2
+item_count = 6
+popup/item_0/text = "Hard"
+popup/item_0/id = 0
+popup/item_1/text = "Soft Very Low"
+popup/item_1/id = 1
+popup/item_2/text = "Soft Low"
+popup/item_2/id = 2
+popup/item_3/text = "Soft Medium"
+popup/item_3/id = 3
+popup/item_4/text = "Soft Hight"
+popup/item_4/id = 4
+popup/item_5/text = "Soft Ultra"
+popup/item_5/id = 5
+
+[node name="window" type="Label" parent="HBoxContainer/Container/video" unique_id=344721070]
+layout_mode = 2
+text = "window mode :"
+
+[node name="window_mode" type="OptionButton" parent="HBoxContainer/Container/video" unique_id=620121183]
+process_mode = 3
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+selected = 1
+item_count = 3
+popup/item_0/text = "windowed"
+popup/item_0/id = 0
+popup/item_1/text = "Fullscreen"
+popup/item_1/id = 1
+popup/item_2/text = "Exclusive Fullscreen"
+popup/item_2/id = 2
+
+[node name="fps" type="Label" parent="HBoxContainer/Container/video" unique_id=1045975134]
+layout_mode = 2
+text = "fps :"
+
+[node name="fps_button" type="OptionButton" parent="HBoxContainer/Container/video" unique_id=104782839]
+process_mode = 3
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+selected = 2
+item_count = 3
+popup/item_0/text = "30FPS"
+popup/item_0/id = 0
+popup/item_1/text = "60FPS"
+popup/item_1/id = 1
+popup/item_2/text = "Uncapped"
+popup/item_2/id = 2
+
+[node name="ao_quality" type="Label" parent="HBoxContainer/Container/video" unique_id=1316975203]
+layout_mode = 2
+text = "ambient occlusion :"
+
+[node name="ao_quality_button" type="OptionButton" parent="HBoxContainer/Container/video" unique_id=728747163]
+layout_mode = 2
+selected = 0
+item_count = 5
+popup/item_0/text = "Very low"
+popup/item_0/id = 0
+popup/item_1/text = "Low"
+popup/item_1/id = 1
+popup/item_2/text = "Average"
+popup/item_2/id = 2
+popup/item_3/text = "High"
+popup/item_3/id = 3
+popup/item_4/text = "Ultra"
+popup/item_4/id = 4
+
+[node name="sdfgi" type="Label" parent="HBoxContainer/Container/video" unique_id=1648029347]
+layout_mode = 2
+text = "SDFGI :"
+
+[node name="sdfgi_button" type="CheckButton" parent="HBoxContainer/Container/video" unique_id=1547289039]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 25
+button_pressed = true
+
+[node name="ssao" type="Label" parent="HBoxContainer/Container/video" unique_id=1285491922]
+layout_mode = 2
+text = "SSAO :"
+
+[node name="ssao_button" type="CheckButton" parent="HBoxContainer/Container/video" unique_id=1059770197]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 25
+button_pressed = true
+
+[node name="ssr" type="Label" parent="HBoxContainer/Container/video" unique_id=1036545086]
+layout_mode = 2
+text = "SSR :"
+
+[node name="ssr_button" type="CheckButton" parent="HBoxContainer/Container/video" unique_id=1181081072]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 25
+button_pressed = true
+
+[node name="ssil" type="Label" parent="HBoxContainer/Container/video" unique_id=2126716891]
+layout_mode = 2
+text = "SSIL :"
+
+[node name="ssil_button" type="CheckButton" parent="HBoxContainer/Container/video" unique_id=1616491272]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 25
+button_pressed = true
+
+[node name="glow" type="Label" parent="HBoxContainer/Container/video" unique_id=1598625321]
+layout_mode = 2
+text = "glow :"
+
+[node name="glow_button" type="CheckButton" parent="HBoxContainer/Container/video" unique_id=768911958]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 25
+button_pressed = true
+
+[node name="vscync" type="Label" parent="HBoxContainer/Container/video" unique_id=1696984687]
+layout_mode = 2
+text = "v-scync :"
+
+[node name="vscync_button" type="CheckButton" parent="HBoxContainer/Container/video" unique_id=799744778]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 25
+button_pressed = true
+
+[node name="recommended_settings" type="Label" parent="HBoxContainer/Container/video" unique_id=1922404876]
+layout_mode = 2
+text = "recommended settings :"
+
+[node name="recommended_settings_button" type="Button" parent="HBoxContainer/Container/video" unique_id=604529762]
+layout_mode = 2
+text = "recommended settings"
+
+[node name="render" type="Label" parent="HBoxContainer/Container/video" unique_id=489825417]
+layout_mode = 2
+text = "render distance :"
+
+[node name="Slider_render_distance" type="HSlider" parent="HBoxContainer/Container/video" unique_id=809275119]
+layout_mode = 2
+min_value = 3.0
+max_value = 25.0
+value = 4.0
+
+[node name="audio" type="GridContainer" parent="HBoxContainer/Container" unique_id=1743808144]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/v_separation = 53
+columns = 2
+
+[node name="mic" type="Label" parent="HBoxContainer/Container/audio" unique_id=1174507614]
+layout_mode = 2
+text = "Micro :"
+
+[node name="mic_enabled" type="CheckButton" parent="HBoxContainer/Container/audio" unique_id=1551115571]
+process_mode = 3
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 25
+button_pressed = true
+
+[node name="volume" type="Label" parent="HBoxContainer/Container/audio" unique_id=1771258330]
+layout_mode = 2
+text = "master volume :"
+
+[node name="volume_slider" type="HSlider" parent="HBoxContainer/Container/audio" unique_id=499949492]
+process_mode = 3
+custom_minimum_size = Vector2(266.725, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="sfx" type="Label" parent="HBoxContainer/Container/audio" unique_id=1029688074]
+layout_mode = 2
+text = "sfx volume :"
+
+[node name="sfx_slider" type="HSlider" parent="HBoxContainer/Container/audio" unique_id=1264895522]
+process_mode = 3
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="music" type="Label" parent="HBoxContainer/Container/audio" unique_id=2066324173]
+layout_mode = 2
+text = "music volume :"
+
+[node name="music_slider" type="HSlider" parent="HBoxContainer/Container/audio" unique_id=312109454]
+process_mode = 3
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="proximity_chat_volume" type="Label" parent="HBoxContainer/Container/audio" unique_id=861268038]
+layout_mode = 2
+text = "proximity chat volume :"
+
+[node name="proximity_chat_volume_slider" type="HSlider" parent="HBoxContainer/Container/audio" unique_id=695590433]
+process_mode = 3
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="control" type="GridContainer" parent="HBoxContainer/Container" unique_id=36060036]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 2
+
+[node name="look_speed" type="Label" parent="HBoxContainer/Container/control" unique_id=893323198]
+layout_mode = 2
+text = "look speed :"
+
+[node name="look_slider" type="HSlider" parent="HBoxContainer/Container/control" unique_id=1961910381]
+process_mode = 3
+custom_minimum_size = Vector2(266.725, 0)
+layout_mode = 2
+min_value = 0.05
+max_value = 0.5
+step = 0.05
+value = 0.2
+
+[node name="return" type="VBoxContainer" parent="HBoxContainer" unique_id=1774737418]
+layout_mode = 2
+
+[node name="x_button" type="Button" parent="HBoxContainer/return" unique_id=855779286]
+process_mode = 3
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Apply"
+
+[connection signal="pressed" from="HBoxContainer/HBoxContainer/VideoButton" to="." method="_on_video_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/HBoxContainer/AudioButton" to="." method="_on_audio_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/HBoxContainer/ControlButton" to="." method="_on_control_button_pressed"]
+[connection signal="value_changed" from="HBoxContainer/Container/video/scaling_slider" to="." method="scale_3d"]
+[connection signal="item_selected" from="HBoxContainer/Container/video/shadow_button" to="." method="set_shadows"]
+[connection signal="item_selected" from="HBoxContainer/Container/video/window_mode" to="." method="set_window_mode"]
+[connection signal="item_selected" from="HBoxContainer/Container/video/fps_button" to="." method="set_fps_cap"]
+[connection signal="item_selected" from="HBoxContainer/Container/video/ao_quality_button" to="." method="set_ao_quality"]
+[connection signal="toggled" from="HBoxContainer/Container/video/sdfgi_button" to="." method="set_sdfgi"]
+[connection signal="toggled" from="HBoxContainer/Container/video/ssao_button" to="." method="set_ssao"]
+[connection signal="toggled" from="HBoxContainer/Container/video/ssr_button" to="." method="set_ssr"]
+[connection signal="toggled" from="HBoxContainer/Container/video/ssil_button" to="." method="set_ssil"]
+[connection signal="toggled" from="HBoxContainer/Container/video/glow_button" to="." method="set_glow"]
+[connection signal="toggled" from="HBoxContainer/Container/video/vscync_button" to="." method="set_vsync"]
+[connection signal="pressed" from="HBoxContainer/Container/video/recommended_settings_button" to="." method="_on_recommended_settings_button_pressed"]
+[connection signal="value_changed" from="HBoxContainer/Container/video/Slider_render_distance" to="." method="set_water_render_distance"]
+[connection signal="toggled" from="HBoxContainer/Container/audio/mic_enabled" to="." method="set_mic_enabled"]
+[connection signal="value_changed" from="HBoxContainer/Container/audio/volume_slider" to="." method="set_master_volume"]
+[connection signal="value_changed" from="HBoxContainer/Container/audio/sfx_slider" to="." method="set_sfx_volume"]
+[connection signal="value_changed" from="HBoxContainer/Container/audio/music_slider" to="." method="set_music_volume"]
+[connection signal="value_changed" from="HBoxContainer/Container/audio/proximity_chat_volume_slider" to="." method="set_proximity_chat_volume"]
+[connection signal="value_changed" from="HBoxContainer/Container/control/look_slider" to="." method="set_look_speed"]

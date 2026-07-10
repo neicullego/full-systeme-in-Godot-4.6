@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://b6d4a5xy06j3y"]
+
+[ext_resource type="Texture2D" uid="uid://bx1nxyt4yi3qh" path="res://assets/texture/paper.png" id="1_edety"]
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="1_p3oa3"]
+
+[resource]
+script = ExtResource("1_p3oa3")
+item_id = "note_01"
+item_name = "Note mystérieuse"
+item_description = "Une vieille note..."
+item_image = ExtResource("1_edety")
+pickup_scene_path = "res://scene/items/DocumentPickup.tscn"
+item_type = 2
+document_image = ExtResource("1_edety")
+document_text = "Le texte que tu veux afficher sur le document..."
+hand_position_offset = Vector3(0, 0.115, 0.04)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

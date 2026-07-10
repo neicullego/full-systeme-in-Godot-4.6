@@ -1,0 +1,179 @@
+[gd_scene format=3 uid="uid://b5fta0wiqv31h"]
+
+[sub_resource type="Shader" id="Shader_efxa6"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.6.stable's ProceduralSkyMaterial.
+// Cloud rendering added manually.
+
+shader_type sky;
+render_mode use_debanding;
+
+group_uniforms sky_base;
+uniform vec4 sky_top_color : source_color = vec4(0.385, 0.454, 0.55, 1.0);
+uniform vec4 sky_horizon_color : source_color = vec4(0.646, 0.656, 0.67, 1.0);
+uniform float inv_sky_curve : hint_range(1, 100) = 4.0;
+uniform vec4 ground_bottom_color : source_color = vec4(0.2, 0.169, 0.133, 1.0);
+uniform vec4 ground_horizon_color : source_color = vec4(0.646, 0.656, 0.67, 1.0);
+uniform float inv_ground_curve : hint_range(1, 100) = 30.0;
+uniform float sun_angle_max = 0.877;
+uniform float inv_sun_curve : hint_range(1, 100) = 22.78;
+uniform float exposure : hint_range(0, 128) = 1.0;
+
+uniform sampler2D sky_cover : filter_linear, source_color, hint_default_black;
+uniform vec4 sky_cover_modulate : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+
+// --- NOUVEAUX PARAMÈTRES POUR LES NUAGES ---
+group_uniforms clouds;
+uniform sampler2D cloud_texture : filter_linear_mipmap, repeat_enable;
+uniform vec2 cloud_direction = vec2(1.0, 0.5);
+uniform float cloud_speed : hint_range(0.0, 0.5) = 0.02;
+uniform float cloud_scale : hint_range(0.01, 2.0) = 0.2;
+uniform vec4 cloud_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 cloud_shadow_color : source_color = vec4(0.6, 0.6, 0.6, 1.0);
+uniform float cloud_density : hint_range(0.0, 1.0) = 0.5;
+uniform float cloud_softness : hint_range(0.01, 1.0) = 0.2;
+
+void sky() {
+	float v_angle = clamp(EYEDIR.y, -1.0, 1.0);
+	vec3 sky = mix(sky_top_color.rgb, sky_horizon_color.rgb, clamp(pow(1.0 - v_angle, inv_sky_curve), 0.0, 1.0));
+
+    // --- SOLEILS ---
+	if (LIGHT0_ENABLED) {
+		float sun_angle = dot(LIGHT0_DIRECTION, EYEDIR);
+		float sun_size = cos(LIGHT0_SIZE);
+		if (sun_angle > sun_size) {
+			sky = LIGHT0_COLOR * LIGHT0_ENERGY;
+		} else if (sun_angle > sun_angle_max) {
+			float c2 = (sun_size - sun_angle) / (sun_size - sun_angle_max);
+			sky = mix(sky, LIGHT0_COLOR * LIGHT0_ENERGY, clamp(pow(1.0 - c2, inv_sun_curve), 0.0, 1.0));
+		}
+	}
+
+	if (LIGHT1_ENABLED) {
+		float sun_angle = dot(LIGHT1_DIRECTION, EYEDIR);
+		float sun_size = cos(LIGHT1_SIZE);
+		if (sun_angle > sun_size) {
+			sky = LIGHT1_COLOR * LIGHT1_ENERGY;
+		} else if (sun_angle > sun_angle_max) {
+			float c2 = (sun_size - sun_angle) / (sun_size - sun_angle_max);
+			sky = mix(sky, LIGHT1_COLOR * LIGHT1_ENERGY, clamp(pow(1.0 - c2, inv_sun_curve), 0.0, 1.0));
+		}
+	}
+
+	if (LIGHT2_ENABLED) {
+		float sun_angle = dot(LIGHT2_DIRECTION, EYEDIR);
+		float sun_size = cos(LIGHT2_SIZE);
+		if (sun_angle > sun_size) {
+			sky = LIGHT2_COLOR * LIGHT2_ENERGY;
+		} else if (sun_angle > sun_angle_max) {
+			float c2 = (sun_size - sun_angle) / (sun_size - sun_angle_max);
+			sky = mix(sky, LIGHT2_COLOR * LIGHT2_ENERGY, clamp(pow(1.0 - c2, inv_sun_curve), 0.0, 1.0));
+		}
+	}
+
+	if (LIGHT3_ENABLED) {
+		float sun_angle = dot(LIGHT3_DIRECTION, EYEDIR);
+		float sun_size = cos(LIGHT3_SIZE);
+		if (sun_angle > sun_size) {
+			sky = LIGHT3_COLOR * LIGHT3_ENERGY;
+		} else if (sun_angle > sun_angle_max) {
+			float c2 = (sun_size - sun_angle) / (sun_size - sun_angle_max);
+			sky = mix(sky, LIGHT3_COLOR * LIGHT3_ENERGY, clamp(pow(1.0 - c2, inv_sun_curve), 0.0, 1.0));
+		}
+	}
+
+	vec3 ground = mix(ground_bottom_color.rgb, ground_horizon_color.rgb, clamp(pow(1.0 + v_angle, inv_ground_curve), 0.0, 1.0));
+
+    // Détermination de la couleur de base (ciel ou sol)
+	vec3 final_color = mix(ground, sky, step(0.0, EYEDIR.y));
+
+    // --- GÉNÉRATION DES NUAGES ---
+    if (EYEDIR.y > 0.0) { // On ne calcule les nuages que dans la moitié supérieure du dôme céleste
+        
+        // 1. Projection planaire : on transforme la vue sphérique en un \"plafond\" 2D infini
+        // On évite la division par zéro en clampant EYEDIR.y
+        vec2 cloud_uv = EYEDIR.xz / clamp(EYEDIR.y, 0.01, 1.0);
+        
+        // 2. Défilement avec le temps
+        vec2 time_offset = normalize(cloud_direction) * TIME * cloud_speed;
+        
+        // 3. Échantillonnage de la texture de bruit (on lit deux fois pour donner du relief)
+        float noise1 = texture(cloud_texture, cloud_uv * cloud_scale + time_offset).r;
+        float noise2 = texture(cloud_texture, cloud_uv * cloud_scale * 2.0 + time_offset * 1.5).r;
+        
+        // On combine les deux bruits pour un effet \"fractal\" plus cotonneux
+        float combined_noise = (noise1 * 0.7) + (noise2 * 0.3);
+        
+        // 4. Calcul de la forme : on coupe le bruit selon la \"densité\" voulue avec un contour \"doux\"
+        float lower_bound = 1.0 - cloud_density;
+        float upper_bound = lower_bound + cloud_softness;
+        float cloud_shape = smoothstep(lower_bound, upper_bound, combined_noise);
+        
+        // 5. Atténuation à l'horizon : on fond les nuages vers l'horizon pour la perspective et le brouillard atmosphérique
+        float horizon_fade = smoothstep(0.0, 0.15, EYEDIR.y);
+        cloud_shape *= horizon_fade;
+
+        // 6. Faux éclairage volumétrique (illumination par le soleil principal LIGHT0)
+        // Les nuages face au soleil sont plus brillants que ceux à l'opposé
+        float sun_dot = clamp(dot(LIGHT0_DIRECTION, EYEDIR), 0.0, 1.0);
+        vec3 cloud_lit_color = mix(cloud_shadow_color.rgb, cloud_color.rgb, sun_dot * 0.5 + 0.5);
+
+        // 7. Mélange final des nuages par-dessus le ciel
+        final_color = mix(final_color, cloud_lit_color, cloud_shape);
+    }
+
+	COLOR = final_color * exposure;
+}
+"
+
+[sub_resource type="Gradient" id="Gradient_efxa6"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_dg77c"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ycdy4"]
+noise = SubResource("FastNoiseLite_dg77c")
+color_ramp = SubResource("Gradient_efxa6")
+seamless = true
+in_3d_space = true
+bump_strength = 308.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dg77c"]
+shader = SubResource("Shader_efxa6")
+shader_parameter/sky_top_color = Color(0.16390127, 0.5345129, 0.8469318, 1)
+shader_parameter/sky_horizon_color = Color(0.70782435, 0.85663456, 0.9373646, 1)
+shader_parameter/inv_sky_curve = 1.0
+shader_parameter/ground_bottom_color = Color(0.12950075, 0.2933374, 0.5217833, 1)
+shader_parameter/ground_horizon_color = Color(0.7058824, 0.85490197, 0.9372549, 1)
+shader_parameter/inv_ground_curve = 20.10000090725
+shader_parameter/sun_angle_max = 0.8660254
+shader_parameter/inv_sun_curve = 22.782017
+shader_parameter/exposure = 1.0
+shader_parameter/sky_cover_modulate = Color(1, 1, 1, 1)
+shader_parameter/cloud_texture = SubResource("NoiseTexture2D_ycdy4")
+shader_parameter/cloud_direction = Vector2(1, 0.5)
+shader_parameter/cloud_speed = 0.02
+shader_parameter/cloud_scale = 0.2
+shader_parameter/cloud_color = Color(1, 1, 1, 1)
+shader_parameter/cloud_shadow_color = Color(0.6, 0.6, 0.6, 1)
+shader_parameter/cloud_density = 0.5
+shader_parameter/cloud_softness = 0.2
+
+[sub_resource type="Sky" id="Sky_wc0b5"]
+sky_material = SubResource("ShaderMaterial_dg77c")
+
+[sub_resource type="Environment" id="Environment_w5hlc"]
+background_mode = 2
+sky = SubResource("Sky_wc0b5")
+tonemap_mode = 2
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+fog_enabled = true
+fog_sky_affect = 0.5
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0127
+volumetric_fog_sky_affect = 0.5
+
+[node name="WorldEnvironment" type="WorldEnvironment" unique_id=117932380]
+environment = SubResource("Environment_w5hlc")

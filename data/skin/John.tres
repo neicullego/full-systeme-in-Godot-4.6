@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SkinData" format=3 uid="uid://c8yfvjusfo72u"]
+
+[ext_resource type="Script" uid="uid://b0pynjcyrs0u0" path="res://generalscript/skin_data.gd" id="1_adrjc"]
+[ext_resource type="Texture2D" uid="uid://b5o8fp8v86c6p" path="res://textures/skin/Capture d'écran 2026-07-09 202053.png" id="1_ndufg"]
+
+[resource]
+script = ExtResource("1_adrjc")
+skin_id = "John"
+skin_name = "John"
+preview_image = ExtResource("1_ndufg")
+skin_mesh_node_paths = Array[String](["Cube", "Cube_001", "Cube_002", "Cube_003", "Cylinder", "Cylinder_001"])
+metadata/_custom_type_script = "uid://b0pynjcyrs0u0"

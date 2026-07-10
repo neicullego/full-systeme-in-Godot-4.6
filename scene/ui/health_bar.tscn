@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://cubebi3nx2ldp"]
+
+[ext_resource type="Script" uid="uid://catu28tdn0umf" path="res://generalscript/health_bar.gd" id="1_7ksgq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7ksgq"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.6431373, 0.07450981, 0, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 6
+
+[node name="HealthBar" type="Control" unique_id=7847869]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7ksgq")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=883839749]
+layout_mode = 1
+offset_left = 33.0
+offset_top = 10.0
+offset_right = 156.0
+offset_bottom = 69.0
+theme_override_constants/separation = 9
+
+[node name="HealthLabel" type="Label" parent="VBoxContainer" unique_id=1901570455]
+layout_mode = 2
+
+[node name="HealthProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=235905959]
+custom_minimum_size = Vector2(123.005, 0)
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_7ksgq")
+value = 100.0

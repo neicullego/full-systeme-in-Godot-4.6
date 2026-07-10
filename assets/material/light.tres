@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://r23426v5nkx1"]
+
+[ext_resource type="Texture2D" uid="uid://cyl26rfxtdmeo" path="res://assets/3Dasset/Rétro_light/Rétro_light_light.png" id="1_xp8bg"]
+
+[resource]
+resource_name = "Material.001"
+cull_mode = 2
+albedo_texture = ExtResource("1_xp8bg")
+roughness = 0.5
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 10.0
+emission_operator = 1
+emission_texture = ExtResource("1_xp8bg")

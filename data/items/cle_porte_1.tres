@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://c6gi15a1xyhph"]
+
+[ext_resource type="Texture2D" uid="uid://rt86641demkk" path="res://assets/texture/key_en_leton.png" id="1_p4rhb"]
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="2_0jb1r"]
+
+[resource]
+script = ExtResource("2_0jb1r")
+item_id = "porte_niveau_1"
+item_name = "Clé niveau 1"
+item_image = ExtResource("1_p4rhb")
+pickup_scene_path = "res://scene/items/KeyPickup.tscn"
+hand_position_offset = Vector3(0.05, 0.115, 0.02)
+hand_rotation_offset = Vector3(0, -0.175, 0)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

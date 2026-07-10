@@ -1,0 +1,11 @@
+res://scene/ui/credi.tscn
+res://assets/shaders/water.gdshader
+res://assets/shaders/new_shader_material.tres
+res://assets/shaders/underwather.gdshader
+res://assets/shaders/water_fog.gdshader
+res://assets/material/vitre.tres
+res://assets/shaders/bulle_d_air.gdshader
+res://assets/shaders/damage_shader.gdshader
+res://assets/shaders/cooldown_interactable.gdshader
+res://assets/shaders/vitre.gdshader
+res://assets/shaders/Eau plate.gdshader

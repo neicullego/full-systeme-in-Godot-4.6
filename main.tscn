@@ -1,0 +1,307 @@
+[gd_scene format=3 uid="uid://b64rk3r14m5br"]
+
+[ext_resource type="Script" uid="uid://diirtxi7nm4ty" path="res://generalscript/multijoueur/main.gd" id="1_0odxb"]
+[ext_resource type="Material" uid="uid://chgevti1cjxgd" path="res://assets/shaders/new_shader_material.tres" id="2_1bvp3"]
+[ext_resource type="Material" uid="uid://3c7tin5jph1m" path="res://assets/shaders/Underwater.tres" id="3_d13ii"]
+[ext_resource type="Script" uid="uid://c6qjj16iy4ise" path="res://generalscript/water/Water.gd" id="3_t5r3v"]
+[ext_resource type="Script" uid="uid://dxjvulrb0nvue" path="res://generalscript/water/buoyancy.gd" id="3_wnrpb"]
+[ext_resource type="Shader" uid="uid://xoadbpg2pw0d" path="res://assets/shaders/water_fog.gdshader" id="4_dg77c"]
+[ext_resource type="PackedScene" uid="uid://fiw83efmhmlp" path="res://scene/door.tscn" id="6_7mycd"]
+[ext_resource type="PackedScene" uid="uid://c8oldekfp5qbp" path="res://scene/items/KeyPickup.tscn" id="7_272bh"]
+[ext_resource type="PackedScene" uid="uid://5a7ot38wgk32" path="res://scene/items/DocumentPickup.tscn" id="9_kek77"]
+[ext_resource type="PackedScene" uid="uid://dqpkdb414btmw" path="res://scene/items/PotionPickup.tscn" id="10_4c57u"]
+[ext_resource type="PackedScene" uid="uid://dfrks4lqplex8" path="res://scene/items/PoisonPickup.tscn" id="11_efxa6"]
+[ext_resource type="PackedScene" uid="uid://c5gr0joqp7n1a" path="res://scene/items/MarteauPickup.tscn" id="12_dg77c"]
+[ext_resource type="PackedScene" uid="uid://b5fta0wiqv31h" path="res://scene/world_environment.tscn" id="14_vivmo"]
+[ext_resource type="Material" uid="uid://byhi1rmxnkx0y" path="res://assets/material/vitre.tres" id="14_w48qg"]
+[ext_resource type="PackedScene" uid="uid://bttda1kxji0nw" path="res://scene/items/TournevisPickup.tscn" id="15_vivmo"]
+[ext_resource type="PackedScene" uid="uid://blfp2al5s4tfe" path="res://scene/cooldown_interactable.tscn" id="16_2cqfq"]
+[ext_resource type="PackedScene" uid="uid://d4bo5j37072ge" path="res://scene/interactable/PlancheClouee.tscn" id="20_82xsv"]
+[ext_resource type="PackedScene" uid="uid://0n72eklaqfc1" path="res://scene/post_process_volume.tscn" id="22_ryguw"]
+[ext_resource type="PackedScene" uid="uid://b1mhddagauywl" path="res://assets/3Dasset/pilier/Pilierdelabasesousmarine.glb" id="23_1u8w0"]
+[ext_resource type="PackedScene" uid="uid://dojtj3hah3ptf" path="res://scene/climb_out_zone.tscn" id="24_0odxb"]
+[ext_resource type="PackedScene" uid="uid://dw7ef75lw6oa0" path="res://scene/items/scaphandre.tscn" id="27_xuqvo"]
+[ext_resource type="PackedScene" uid="uid://d0od8mnmx3v1" path="res://scene/Système/checkpoint.tscn" id="28_xuqvo"]
+[ext_resource type="PackedScene" uid="uid://244s2c4xqyks" path="res://scene/oxygène.tscn" id="32_jq2sk"]
+[ext_resource type="PackedScene" uid="uid://doou178ny1f4w" path="res://scene/items/lamp.tscn" id="36_ok6jj"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0xwda"]
+lightmap_size_hint = Vector2i(2502, 2502)
+material = ExtResource("2_1bvp3")
+size = Vector2(0, 0)
+subdivide_width = 256
+subdivide_depth = 256
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w48qg"]
+shader = ExtResource("4_dg77c")
+shader_parameter/surface_y = 0.0
+shader_parameter/max_depth = 30.0
+shader_parameter/max_density = 0.23
+shader_parameter/fog_curve = 1.5
+shader_parameter/fog_color = Color(0, 0.1, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_km0el"]
+size = Vector3(5, 1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lu3w5"]
+size = Vector3(5, 1, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lquwl"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lquwl"]
+points = PackedVector3Array(0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7mycd"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_272bh"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ycdy4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_seu75"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lswn8"]
+size = Vector3(1, 5.9434814, 1)
+
+[node name="Main" type="Node3D" unique_id=836421457]
+script = ExtResource("1_0odxb")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1346764098]
+spawn_path = NodePath("../Players")
+spawn_limit = 2
+
+[node name="Players" type="Node3D" parent="." unique_id=1249452715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.722314, 50.492226, 0.12253147)
+
+[node name="SpawnPoints" type="Node3D" parent="." unique_id=1228203463]
+transform = Transform3D(0.9473557, 0, -0.32018313, 0, 1, 0, 0.32018313, 0, 0.9473557, -1.359494, 57.41399, -12.652607)
+
+[node name="Marker3D" type="Marker3D" parent="SpawnPoints" unique_id=683807148]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3460388, 0, -0.6150981)
+
+[node name="Marker3D2" type="Marker3D" parent="SpawnPoints" unique_id=1381972812]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.1303389)
+
+[node name="Marker3D3" type="Marker3D" parent="SpawnPoints" unique_id=377678566]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1660544, 0, 0.27746505)
+
+[node name="Marker3D4" type="Marker3D" parent="SpawnPoints" unique_id=1863678916]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5267758, 0, -1.0531443)
+
+[node name="Water" type="MeshInstance3D" parent="." unique_id=966827256 node_paths=PackedStringArray("water_fog_volume") groups=["water"]]
+transform = Transform3D(0.9956023, 0, 0, 0, 0.9956023, 0, 0, 0, 0.9956023, 0.032384396, 51.628746, 0.01537323)
+material_override = ExtResource("2_1bvp3")
+mesh = SubResource("PlaneMesh_0xwda")
+script = ExtResource("3_t5r3v")
+underwater_material = ExtResource("3_d13ii")
+material_template = ExtResource("2_1bvp3")
+water_fog_volume = NodePath("FogVolume")
+max_depth = 8.0
+fog_ramp_speed = 1.0
+
+[node name="FogVolume" type="FogVolume" parent="Water" unique_id=562800277]
+transform = Transform3D(999.9998, 0, 0, 0, 999.9998, 0, 0, 0, 999.9998, 0, -3570.9482, 0)
+material = SubResource("ShaderMaterial_w48qg")
+
+[node name="Door" parent="." unique_id=897376747 instance=ExtResource("6_7mycd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0832365, 56.746716, -10.757932)
+
+[node name="PhysicsDoor" parent="Door" index="1" unique_id=653255392]
+is_locked = true
+door_id = "porte_niveau_1"
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=816987618]
+transform = Transform3D(-0.94009763, 0.08592903, -0.32989797, -0.23721991, -0.859886, 0.4520208, -0.2448329, 0.503202, 0.8287609, 0, 51.628746, 0)
+shadow_enabled = true
+
+[node name="Cube" type="RigidBody3D" parent="." unique_id=1909480409]
+transform = Transform3D(-0.761663, 0, -0.647974, 0, 1, 0, 0.647974, 0, -0.761663, -9.728559, 54.767967, 3.6477928)
+collision_layer = 6
+collision_mask = 6
+mass = 10.0
+script = ExtResource("3_wnrpb")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Cube" unique_id=338457840]
+transform = Transform3D(0.9999999, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 0.9999999, 0, 0, 0)
+layers = 3
+mesh = SubResource("BoxMesh_km0el")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube" unique_id=852050042]
+shape = SubResource("BoxShape3D_lu3w5")
+
+[node name="ProbeContainer" type="Node3D" parent="Cube" unique_id=1183258008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.590401, 0)
+
+[node name="Probe" type="Marker3D" parent="Cube/ProbeContainer" unique_id=500899481]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 5)
+
+[node name="Probe2" type="Marker3D" parent="Cube/ProbeContainer" unique_id=1739096304]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 0)
+
+[node name="Probe3" type="Marker3D" parent="Cube/ProbeContainer" unique_id=1756312022]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -5)
+
+[node name="Probe4" type="Marker3D" parent="Cube/ProbeContainer" unique_id=307243800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+
+[node name="Probe5" type="Marker3D" parent="Cube/ProbeContainer" unique_id=820745112]
+
+[node name="Probe6" type="Marker3D" parent="Cube/ProbeContainer" unique_id=1930162115]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+
+[node name="Probe7" type="Marker3D" parent="Cube/ProbeContainer" unique_id=1482988939]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 5)
+
+[node name="Probe8" type="Marker3D" parent="Cube/ProbeContainer" unique_id=773707267]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 0)
+
+[node name="Probe9" type="Marker3D" parent="Cube/ProbeContainer" unique_id=852614134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -5)
+
+[node name="Probe10" type="Marker3D" parent="Cube/ProbeContainer" unique_id=1997215467]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -2.239317)
+
+[node name="Probe11" type="Marker3D" parent="Cube/ProbeContainer" unique_id=1094433947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.450581e-09, 0, -2.239317)
+
+[node name="Probe12" type="Marker3D" parent="Cube/ProbeContainer" unique_id=924064582]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -2.239317)
+
+[node name="Probe13" type="Marker3D" parent="Cube/ProbeContainer" unique_id=903732536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 2.5937219)
+
+[node name="Probe14" type="Marker3D" parent="Cube/ProbeContainer" unique_id=1653140887]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.450581e-09, 0, 2.5937219)
+
+[node name="Probe15" type="Marker3D" parent="Cube/ProbeContainer" unique_id=2124193090]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 2.5937219)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1988882439]
+transform = Transform3D(19.14769, 0, 0, 0, 1, 0, 0, 0, 19.557905, 0, 55.240562, -10.900382)
+layers = 3
+mesh = SubResource("BoxMesh_lquwl")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=1694198758]
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=662300281]
+shape = SubResource("ConvexPolygonShape3D_lquwl")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1923992822]
+transform = Transform3D(1.385127, 0, 0, 0, 1, 0, 0, 0, 1.3191146, 2.4866433, 56.24581, -10.900382)
+layers = 3
+mesh = SubResource("BoxMesh_lquwl")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D4" unique_id=1956478789]
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D4/StaticBody3D" unique_id=1087529145]
+shape = SubResource("ConvexPolygonShape3D_lquwl")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1241041029]
+transform = Transform3D(1.5738942e-07, 0.4327603, 16.116182, 7.8742005e-08, 1.118211, -6.2371426, -5.2811127, -1.4550506e-08, 3.6652816e-07, 17.35387, 52.013695, -12.19068)
+layers = 3
+mesh = SubResource("BoxMesh_7mycd")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2" unique_id=2001808435]
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D" unique_id=1856601096]
+shape = SubResource("BoxShape3D_272bh")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=1390860381]
+transform = Transform3D(1.5738941e-07, 0.51037145, 39.33296, 7.8742005e-08, 1.0849878, -18.501972, -5.2811127, -1.2732875e-08, 8.4409123e-07, -26.434029, 64.06283, -10.803715)
+layers = 3
+mesh = SubResource("BoxMesh_7mycd")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5" unique_id=1673123178]
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D5/StaticBody3D" unique_id=59758036]
+shape = SubResource("BoxShape3D_272bh")
+
+[node name="key_en_leton" parent="." unique_id=1269317790 instance=ExtResource("7_272bh")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.956236, 56.85183, -10.941887)
+
+[node name="KeyPickup" parent="." unique_id=19978129 instance=ExtResource("9_kek77")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1250525, 56.334923, -7.5087824)
+
+[node name="PotionPickup" parent="." unique_id=1773162327 instance=ExtResource("10_4c57u")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.05615, 56.95022, -11.399965)
+
+[node name="PoisonPickup" parent="." unique_id=344715559 instance=ExtResource("11_efxa6")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0847518, 56.958763, -10.432189)
+
+[node name="MarteauPickup" parent="." unique_id=867700305 instance=ExtResource("12_dg77c")]
+unique_name_in_owner = true
+transform = Transform3D(0.9955883, 0, 0, 0, 0.9955883, 0, 0, 0, 0.9955883, -4.388288, 56.182503, -8.038383)
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="." unique_id=1607550306]
+transform = Transform3D(5.42443, 0.6433654, 0, -2.0812657, 1.6768116, 0, 0, 0, 0.47, 21.636065, 51.91948, -14.59818)
+mesh = SubResource("BoxMesh_ycdy4")
+surface_material_override/0 = ExtResource("14_w48qg")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D6" unique_id=287847484]
+collision_layer = 15
+collision_mask = 15
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D6/StaticBody3D" unique_id=1140753427]
+shape = SubResource("BoxShape3D_seu75")
+
+[node name="WorldEnvironment" parent="." unique_id=117932380 instance=ExtResource("14_vivmo")]
+
+[node name="TournevisPickup" parent="." unique_id=1777505117 instance=ExtResource("15_vivmo")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.36035, 56.277122, -10.135167)
+
+[node name="CooldownInteractable" parent="." unique_id=91786948 instance=ExtResource("16_2cqfq")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.250472, 57.263695, -7.9904804)
+tool_required_id = "Tournevis"
+
+[node name="PlancheClouee" parent="." unique_id=878546914 instance=ExtResource("20_82xsv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 57.85064, -7.8725286)
+
+[node name="Scaphandre" parent="." unique_id=758986524 instance=ExtResource("27_xuqvo")]
+transform = Transform3D(0.62368864, 0, 0.78167284, 0, 1, 0, -0.78167284, 0, 0.62368864, 4.530708, 56.10921, -10.880081)
+
+[node name="checkpoint" parent="." unique_id=647610863 instance=ExtResource("28_xuqvo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4922695, 57.090717, -9.3983135)
+
+[node name="Bouteille_d\'oxygène" parent="." unique_id=1631889649 instance=ExtResource("32_jq2sk")]
+transform = Transform3D(0.52533805, 0, -0.8508936, 0, 1, 0, 0.8508936, 0, 0.52533805, -2.5325289, 56.136406, -7.411855)
+
+[node name="toggle_light" parent="." unique_id=377201194 instance=ExtResource("36_ok6jj")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2694416, 56.2126, -9.015787)
+
+[node name="Post Process Volume" parent="." unique_id=2104117676 instance=ExtResource("22_ryguw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.093348, 51.5451, -12.973967)
+
+[node name="DryZone" parent="Post Process Volume" index="0" unique_id=1200408124 node_paths=PackedStringArray("water_node")]
+water_node = NodePath("../../Water")
+
+[node name="Pilierdelabasesousmarine" parent="." unique_id=1906172258 instance=ExtResource("23_1u8w0")]
+transform = Transform3D(0.4039631, 0, 0, 0, 2.6283226, 0, 0, 0, 0.2995755, 2.0748327, 52.555576, -1.3032547)
+
+[node name="ClimbOutZone" parent="." unique_id=877411160 instance=ExtResource("24_0odxb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.063229, 52.053303, -0.23151028)
+
+[node name="CollisionShape3D" parent="ClimbOutZone" index="0" unique_id=2046065224]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.527771, -0.50652075)
+shape = SubResource("BoxShape3D_lswn8")
+
+[node name="ExitMarker" parent="ClimbOutZone" index="1" unique_id=1055012028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.969139, -1.8701445)
+
+[editable path="Door"]
+[editable path="toggle_light"]
+[editable path="Post Process Volume"]
+[editable path="ClimbOutZone"]

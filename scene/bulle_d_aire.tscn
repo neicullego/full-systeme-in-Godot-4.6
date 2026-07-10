@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://20vuutiylqi0"]
+
+[ext_resource type="Shader" uid="uid://bth4ajy2uw1kp" path="res://assets/shaders/bulle_d_air.gdshader" id="1_860ae"]
+[ext_resource type="Script" uid="uid://dxffn7333srji" path="res://generalscript/bulle_d_air.gd" id="2_aukqm"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7ai1l"]
+direction = Vector3(0, 0, 1)
+spread = 90.0
+initial_velocity_min = 0.5
+initial_velocity_max = 1.5
+gravity = Vector3(0, 3, 0)
+scale_min = 0.02
+scale_max = 0.08
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aukqm"]
+render_priority = 0
+shader = ExtResource("1_860ae")
+shader_parameter/bubble_color = Color(0.7, 0.9, 1, 0.2)
+shader_parameter/water_base_y = 0.0
+shader_parameter/wave_time = 0.0
+shader_parameter/noise_scale = 10.0
+shader_parameter/height_scale = 0.15
+shader_parameter/wave_speed = 2.0
+shader_parameter/dry_zone_inverse_matrix = Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+shader_parameter/dry_zone_half_size = Vector3(0, 0, 0)
+
+[sub_resource type="SphereMesh" id="SphereMesh_7ai1l"]
+material = SubResource("ShaderMaterial_aukqm")
+radius = 0.25
+height = 0.5
+
+[node name="GPUParticles3D" type="GPUParticles3D" unique_id=932479387]
+amount = 30
+lifetime = 3.0
+process_material = SubResource("ParticleProcessMaterial_7ai1l")
+draw_pass_1 = SubResource("SphereMesh_7ai1l")
+script = ExtResource("2_aukqm")

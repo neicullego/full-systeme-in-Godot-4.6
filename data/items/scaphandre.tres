@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://eqq17nw7sxtc"]
+
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="1_dnph2"]
+[ext_resource type="Texture2D" uid="uid://bwck3pia18cul" path="res://textures/Capture d'écran 2026-07-09 202315.png" id="1_p7hkv"]
+
+[resource]
+script = ExtResource("1_dnph2")
+item_id = "scaphandre"
+item_name = "scaphandre"
+item_image = ExtResource("1_p7hkv")
+pickup_scene_path = "res://scene/items/scaphandre.tscn"
+stays_on_ground = true
+item_type = 5
+clothing_mesh_node_paths = Array[String](["Cube3", "Cube_007", "Cube_008", "Cube_009", "Cylinder3", "Cylinder_003"])
+heavy_diving_suit = true
+oxygen_bonus = 50.0
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

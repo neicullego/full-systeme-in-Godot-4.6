@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://df2vnq4jj6ffw"]
+
+[ext_resource type="Texture2D" uid="uid://dglb4fgajnuoc" path="res://textures/light.png" id="1_gxlca"]
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="2_3ak8e"]
+
+[resource]
+script = ExtResource("2_3ak8e")
+item_id = "toggle_light"
+item_name = "lamp"
+item_description = "lamp"
+item_image = ExtResource("1_gxlca")
+pickup_scene_path = "res://scene/items/lamp.tscn"
+item_type = 6
+tool_required_id = "toggle_light"
+hand_position_offset = Vector3(0, 0.115, 0.1)
+hand_rotation_offset = Vector3(0, -0.175, 90)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://bigeye056v31e"]
+
+[ext_resource type="Texture2D" uid="uid://ds77yiyi63uyc" path="res://textures/tournevis.png" id="1_3q4wi"]
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="1_roybf"]
+
+[resource]
+script = ExtResource("1_roybf")
+item_id = "Tournevis"
+item_name = "Tournevis"
+item_description = "Tournevis"
+item_image = ExtResource("1_3q4wi")
+pickup_scene_path = "res://scene/items/TournevisPickup.tscn"
+item_type = 4
+tool_required_id = "Tournevis"
+hand_position_offset = Vector3(0, 0.115, 0.02)
+hand_rotation_offset = Vector3(0, -0.175, 0)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

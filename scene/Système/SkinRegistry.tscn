@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cxfmj2273oplm"]
+
+[ext_resource type="Script" uid="uid://kluy5e82sjoe" path="res://generalscript/skin_registry.gd" id="1_tjf8u"]
+[ext_resource type="Script" uid="uid://b0pynjcyrs0u0" path="res://generalscript/skin_data.gd" id="2_8q67x"]
+[ext_resource type="Resource" uid="uid://c8yfvjusfo72u" path="res://data/skin/John.tres" id="3_iqaou"]
+[ext_resource type="Resource" uid="uid://b5wvxvuri6tfa" path="res://data/skin/Marinette.tres" id="4_bcydk"]
+
+[node name="SkinRegistry" type="Node" unique_id=375590492]
+script = ExtResource("1_tjf8u")
+available_skins = Array[ExtResource("2_8q67x")]([ExtResource("3_iqaou"), ExtResource("4_bcydk")])

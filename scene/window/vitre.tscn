@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://6085x1nixjck"]
+
+[ext_resource type="Material" uid="uid://byhi1rmxnkx0y" path="res://assets/material/vitre.tres" id="1_bg6yp"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_8g304"]
+
+[node name="vitre" type="Node3D" unique_id=2135651907]
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="." unique_id=1444669344]
+mesh = SubResource("BoxMesh_8g304")
+surface_material_override/0 = ExtResource("1_bg6yp")

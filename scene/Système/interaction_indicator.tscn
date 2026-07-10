@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cbodrsfy452qi"]
+
+[ext_resource type="Script" uid="uid://bo1nsw3kf5e52" path="res://generalscript/interaction_indicator.gd" id="1_sv60l"]
+[ext_resource type="Texture2D" uid="uid://blg0xcx3hb1id" path="res://assets/texture/clique.png" id="1_vurdj"]
+
+[node name="InteractionIndicator" type="Node3D" unique_id=865045235]
+script = ExtResource("1_sv60l")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=625140242]
+transform = Transform3D(0.36, 0, 0, 0, 0.36, 0, 0, 0, 0.36, 0, 0, 0)
+pixel_size = 0.005
+billboard = 1
+no_depth_test = true
+render_priority = 1
+texture = ExtResource("1_vurdj")

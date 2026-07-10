@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://h1thlmqjsrvy"]
+
+[ext_resource type="Texture2D" uid="uid://cgj3u4exirf1b" path="res://assets/3Dasset/Rétro_light/Rétro_light_Metal048B_1K-JPG_Metalness.jpg-Metal048B_1K-JPG_Roughness.png" id="1_dgp8a"]
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="1_sovjf"]
+
+[resource]
+script = ExtResource("1_sovjf")
+item_id = "potion_soin"
+item_name = "Potion de soin"
+item_image = ExtResource("1_dgp8a")
+pickup_scene_path = "res://scene/items/PotionPickup.tscn"
+item_type = 1
+health_effect = 10.0
+hand_position_offset = Vector3(0.05, 0.115, 0.04)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

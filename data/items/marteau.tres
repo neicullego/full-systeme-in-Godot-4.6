@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" format=3 uid="uid://cixdro150iy22"]
+
+[ext_resource type="Script" uid="uid://bycc4sw8qj41p" path="res://generalscript/items/item_data.gd" id="1_dm0w7"]
+[ext_resource type="Texture2D" uid="uid://b4o5q13x6te34" path="res://textures/hamer.png" id="1_vcj6w"]
+
+[resource]
+script = ExtResource("1_dm0w7")
+item_id = "marteau"
+item_name = "marteau"
+item_description = "marteau"
+item_image = ExtResource("1_vcj6w")
+pickup_scene_path = "res://scene/items/MarteauPickup.tscn"
+item_type = 3
+tool_damage = 25.0
+tool_required_id = "marteau"
+hand_position_offset = Vector3(0.04, 0.1, 0.02)
+hand_rotation_offset = Vector3(180, -0.175, 0)
+metadata/_custom_type_script = "uid://bycc4sw8qj41p"

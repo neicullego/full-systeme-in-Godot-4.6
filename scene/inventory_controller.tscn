@@ -1,0 +1,132 @@
+[gd_scene format=3 uid="uid://dvo6omsoerlmd"]
+
+[ext_resource type="Script" uid="uid://dgfsgexxoe00n" path="res://generalscript/inventory_controller.gd" id="1_u2y4u"]
+[ext_resource type="PackedScene" uid="uid://b2v62eh0fmlh" path="res://scene/ui/document_ui.tscn" id="2_51a78"]
+[ext_resource type="PackedScene" uid="uid://cubebi3nx2ldp" path="res://scene/ui/health_bar.tscn" id="3_4ocua"]
+[ext_resource type="Script" uid="uid://ciduhh1canu7s" path="res://generalscript/inventory_slot.gd" id="3_r75e0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_idfbw"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_color = Color(0.8, 0.8, 0.8, 0)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vk0cv"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.92941177)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o32d1"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.225, 0.225, 0.225, 0.6)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="InventoryController" type="Node" unique_id=827081949]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=537260724]
+
+[node name="HealthBar" parent="CanvasLayer" unique_id=7847869 instance=ExtResource("3_4ocua")]
+
+[node name="InventoryUI" type="Control" parent="CanvasLayer" unique_id=390550779]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_u2y4u")
+
+[node name="Panel" type="Panel" parent="CanvasLayer/InventoryUI" unique_id=794310887]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -254.25
+offset_top = -159.625
+offset_right = 254.25
+offset_bottom = 159.625
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/InventoryUI/Panel" unique_id=893094851]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 13.625
+offset_bottom = 42.375
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/InventoryUI/Panel/HBoxContainer" unique_id=1792562905]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/InventoryUI/Panel/HBoxContainer" unique_id=369528335]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 133
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 149
+
+[node name="EquipmentPanel" type="PanelContainer" parent="CanvasLayer/InventoryUI/Panel/HBoxContainer/MarginContainer" unique_id=1604670631]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="ClothingSlot" type="Button" parent="CanvasLayer/InventoryUI/Panel/HBoxContainer/MarginContainer/EquipmentPanel" unique_id=1662869444]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(66, 66)
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_idfbw")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_vk0cv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_o32d1")
+script = ExtResource("3_r75e0")
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/InventoryUI/Panel/HBoxContainer/MarginContainer/EquipmentPanel/ClothingSlot" unique_id=337431738]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+
+[node name="DocumentUI" parent="CanvasLayer" unique_id=1385129117 instance=ExtResource("2_51a78")]

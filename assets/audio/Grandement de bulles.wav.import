@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dc8ib4rfv1vvd"
+path="res://.godot/imported/Grandement de bulles.wav-1085c6f29210ceac0135061f41ff8999.sample"
+
+[deps]
+
+source_file="res://assets/audio/Grandement de bulles.wav"
+dest_files=["res://.godot/imported/Grandement de bulles.wav-1085c6f29210ceac0135061f41ff8999.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

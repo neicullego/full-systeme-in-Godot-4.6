@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://fiw83efmhmlp"]
+
+[ext_resource type="Script" uid="uid://cn3apgh08i51l" path="res://generalscript/door.gd" id="1_y5pye"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_5623o"]
+size = Vector3(1, 2, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5623o"]
+size = Vector3(1, 2, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y5pye"]
+size = Vector3(0.1, 2, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y5pye"]
+size = Vector3(0.1, 2, 0.1)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_y5pye"]
+properties/0/path = NodePath("PhysicsDoor:rotation")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath("PhysicsDoor:freeze")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath("PhysicsDoor:position")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath("PhysicsDoor:is_locked")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+
+[node name="Door" type="Node3D" unique_id=897376747]
+
+[node name="HingeJoint3D" type="HingeJoint3D" parent="." unique_id=1401686288]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.5076057, 0, 0)
+node_a = NodePath("../PhysicsDoor")
+node_b = NodePath("../DoorFrame")
+angular_limit/enable = true
+angular_limit/upper = 0.0
+angular_limit/lower = -1.9198622
+motor/target_velocity = 0.0017453292
+motor/max_impulse = 0.01
+
+[node name="PhysicsDoor" type="RigidBody3D" parent="." unique_id=653255392 groups=["Door"]]
+collision_layer = 14
+collision_mask = 14
+mass = 0.25
+gravity_scale = 0.0
+script = ExtResource("1_y5pye")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="PhysicsDoor" unique_id=421119087]
+mesh = SubResource("BoxMesh_5623o")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PhysicsDoor" unique_id=1820282418]
+shape = SubResource("BoxShape3D_5623o")
+
+[node name="marker_node" type="Marker3D" parent="PhysicsDoor" unique_id=258977763]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.41086677, 0, 0)
+
+[node name="DoorFrame" type="StaticBody3D" parent="." unique_id=1694192946]
+collision_layer = 0
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="DoorFrame" unique_id=361541028]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5500346, 0, 0)
+mesh = SubResource("BoxMesh_y5pye")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DoorFrame" unique_id=270672647]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5500346, 0, 0)
+shape = SubResource("BoxShape3D_y5pye")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1183578436]
+replication_interval = 0.25
+replication_config = SubResource("SceneReplicationConfig_y5pye")
