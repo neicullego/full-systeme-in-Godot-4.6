@@ -352,9 +352,9 @@ func _input(event):
 				# CHANGEMENT ICI : On utilise += pour inverser le sens vertical
 				cam_pitch += event.relative.y * sensitivity 
 				cam_pitch = clamp(cam_pitch, PITCH_MIN, PITCH_MAX)
-			if event.is_action_pressed("use_item"):
+			if event.is_action_pressed("interact"):
 				_try_inspect_equipped_item()
-			if event.is_action_pressed("use_item"):
+			if event.is_action_pressed("interact"):
 				_try_use_equipped_item()
 			
 func _try_use_equipped_item() -> void:

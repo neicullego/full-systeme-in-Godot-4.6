@@ -2,7 +2,14 @@
 extends Control
 class_name InventoryController
 
+var item_memory = false
+var slot_memory = null
+
+var data: ItemData = null
+
 @onready var clothing_slot: InventorySlots = %ClothingSlot
+
+var item = null
 
 # Stockage local des offsets pour l'autorité ET les marionnettes
 var _current_item_pos_offset: Vector3 = Vector3.ZERO
@@ -94,7 +101,7 @@ func _on_slot_right_clicked(slot: InventorySlots) -> void:
 	if slot.is_empty():
 		return
 		
-	var data: ItemData = slot.item_data
+	data = slot.item_data
 	
 	# 🆕 Jeter l'habit actuellement porté
 	if slot == clothing_slot:
@@ -119,9 +126,10 @@ func _equip_item(slot: InventorySlots) -> void:
 	if hand_anchor == null:
 		print("[Équipement] ERREUR : hand_anchor est null !")
 		return
-
 	equipped_slot = slot
-	var data: ItemData = slot.item_data
+	data = slot.item_data
+	item = data
+
 	if data.pickup_scene_path == "":
 		return
 
@@ -151,10 +159,12 @@ func _drop_from_hand(slot: InventorySlots) -> void:
 		return
 
 	# ✅ On capture TOUT ce dont on a besoin AVANT tout appel destructeur
-	var data: ItemData = slot.item_data
+	data = slot.item_data
 	if data == null:
 		return
-
+	
+	slot_memory = null
+	
 	var drop_position: Vector3
 	if hand_anchor != null:
 		drop_position = hand_anchor.global_position
@@ -283,6 +293,13 @@ func _physics_process(_delta: float) -> void:
 	if not is_multiplayer_authority():
 		return
 	
+	if Input.is_action_just_pressed("unequipe_input"):
+		unequipe_input()
+
+	if Input.is_action_just_pressed("drop_input"):
+		drop_input()
+
+	
 	if player_node and player_node._is_cooldown_interacting:
 		var raycast: RayCast3D = player_node.get_node("CameraPivot/PhysicsRayCast")
 		raycast.force_raycast_update()
@@ -306,7 +323,7 @@ func _use_consumable(slot: InventorySlots) -> void:
 	if player_node == null:
 		return
 
-	var data: ItemData = slot.item_data
+	data = slot.item_data
 	print("[Consommable] Utilisation de : ", data.item_name)
 
 	# Lance l'animation IK — l'effet est appliqué à mi-animation
@@ -331,7 +348,7 @@ func _use_tool(slot: InventorySlots) -> void:
 	if player_node._is_swinging:
 		return
 
-	var data: ItemData = slot.item_data
+	data = slot.item_data
 	print("[Outil] Utilisation de : ", data.item_name)
 
 	# Passe le dictionnaire d'animations à start_tool_swing
@@ -430,7 +447,7 @@ func _use_cooldown_tool(slot: InventorySlots) -> void:
 		print("[CooldownTool] Interaction déjà en cours.")
 		return
 
-	var data: ItemData = slot.item_data
+	data = slot.item_data
 	var raycast: RayCast3D = player_node.get_node("CameraPivot/PhysicsRayCast")
 	raycast.force_raycast_update()
 
@@ -560,7 +577,7 @@ func _equip_clothing(slot: InventorySlots) -> void:
 	if slot.is_empty() or player_node == null:
 		return
 
-	var data: ItemData = slot.item_data
+	data = slot.item_data
 	if data.item_type != ItemData.ItemType.CLOTHING:
 		return
 
@@ -584,7 +601,7 @@ func _unequip_clothing() -> void:
 	if clothing_slot == null or clothing_slot.is_empty():
 		return
 
-	var data: ItemData = clothing_slot.item_data
+	data = clothing_slot.item_data
 
 	var free_slot: InventorySlots = null
 	for s in inventory_slots:
@@ -680,3 +697,27 @@ func _drop_item_at(data: ItemData, center: Vector3) -> void:
 	var generated_name := "Dropped_" + data.item_id + "_" + str(Time.get_ticks_msec()) + "_" + str(randi())
 	_rpc_sync_drop.rpc(data.pickup_scene_path, drop_position, drop_velocity, generated_name)
 	print("[Mort] ", data.item_name, " jeté au sol.")
+
+func unequipe_input():
+	var slot = equipped_slot
+	if slot != null:
+		slot_memory = slot
+		
+	if slot_memory == null:
+		return
+	slot = slot_memory
+	
+	
+	if slot == equipped_slot:
+		_unequip_item()
+		return
+	_equip_item(slot)
+
+
+
+func drop_input():
+	var slot = equipped_slot
+	if slot == null:
+		return
+	
+	_drop_from_hand(slot)

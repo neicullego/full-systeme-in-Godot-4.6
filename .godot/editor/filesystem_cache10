@@ -1,9 +1,9 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1783686211
+::res://::1784033816
 default_bus_layout.tres::AudioBusLayout::8656665935979294447::1782734926::0::1::::<><><>0<>0<><>::
-export_presets.cfg::TextFile::-1::1783680330::0::1::::<><><>0<>0<><>::
+export_presets.cfg::TextFile::-1::1783687831::0::1::::<><><>0<>0<><>::
 icon.svg::CompressedTexture2D::2976572228107080030::1774298266::1781516146::1::::<><><>0<>0<>5058e523bae8d5a75b3a96883db55266<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.s3tc.ctex::
-main.tscn::PackedScene::4623193336291977563::1783685973::0::1::::<><><>0<>0<><>::uid://diirtxi7nm4ty::::res://generalscript/multijoueur/main.gd<>uid://chgevti1cjxgd::::res://assets/shaders/new_shader_material.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://c6qjj16iy4ise::::res://generalscript/water/Water.gd<>uid://dxjvulrb0nvue::::res://generalscript/water/buoyancy.gd<>uid://xoadbpg2pw0d::::res://assets/shaders/water_fog.gdshader<>uid://fiw83efmhmlp::::res://scene/door.tscn<>uid://c8oldekfp5qbp::::res://scene/items/KeyPickup.tscn<>uid://5a7ot38wgk32::::res://scene/items/DocumentPickup.tscn<>uid://dqpkdb414btmw::::res://scene/items/PotionPickup.tscn<>uid://dfrks4lqplex8::::res://scene/items/PoisonPickup.tscn<>uid://c5gr0joqp7n1a::::res://scene/items/MarteauPickup.tscn<>uid://b5fta0wiqv31h::::res://scene/world_environment.tscn<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://bttda1kxji0nw::::res://scene/items/TournevisPickup.tscn<>uid://blfp2al5s4tfe::::res://scene/cooldown_interactable.tscn<>uid://d4bo5j37072ge::::res://scene/interactable/PlancheClouee.tscn<>uid://0n72eklaqfc1::::res://scene/post_process_volume.tscn<>uid://b1mhddagauywl::::res://assets/3Dasset/pilier/Pilierdelabasesousmarine.glb<>uid://dojtj3hah3ptf::::res://scene/climb_out_zone.tscn<>uid://dw7ef75lw6oa0::::res://scene/items/scaphandre.tscn<>uid://d0od8mnmx3v1::::res://scene/Système/checkpoint.tscn<>uid://244s2c4xqyks::::res://scene/oxygène.tscn<>uid://doou178ny1f4w::::res://scene/items/lamp.tscn
+main.tscn::PackedScene::4623193336291977563::1783687245::0::1::::<><><>0<>0<><>::uid://diirtxi7nm4ty::::res://generalscript/multijoueur/main.gd<>uid://chgevti1cjxgd::::res://assets/shaders/new_shader_material.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://c6qjj16iy4ise::::res://generalscript/water/Water.gd<>uid://dxjvulrb0nvue::::res://generalscript/water/buoyancy.gd<>uid://xoadbpg2pw0d::::res://assets/shaders/water_fog.gdshader<>uid://fiw83efmhmlp::::res://scene/door.tscn<>uid://c8oldekfp5qbp::::res://scene/items/KeyPickup.tscn<>uid://5a7ot38wgk32::::res://scene/items/DocumentPickup.tscn<>uid://dqpkdb414btmw::::res://scene/items/PotionPickup.tscn<>uid://dfrks4lqplex8::::res://scene/items/PoisonPickup.tscn<>uid://c5gr0joqp7n1a::::res://scene/items/MarteauPickup.tscn<>uid://b5fta0wiqv31h::::res://scene/world_environment.tscn<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://bttda1kxji0nw::::res://scene/items/TournevisPickup.tscn<>uid://blfp2al5s4tfe::::res://scene/cooldown_interactable.tscn<>uid://d4bo5j37072ge::::res://scene/interactable/PlancheClouee.tscn<>uid://0n72eklaqfc1::::res://scene/post_process_volume.tscn<>uid://b1mhddagauywl::::res://assets/3Dasset/pilier/Pilierdelabasesousmarine.glb<>uid://dojtj3hah3ptf::::res://scene/climb_out_zone.tscn<>uid://dw7ef75lw6oa0::::res://scene/items/scaphandre.tscn<>uid://d0od8mnmx3v1::::res://scene/Système/checkpoint.tscn<>uid://244s2c4xqyks::::res://scene/oxygène.tscn<>uid://doou178ny1f4w::::res://scene/items/lamp.tscn
 README.md::TextFile::-1::1783674160::0::1::::<><><>0<>0<><>::
 steam_appid.txt::TextFile::-1::1781861188::0::1::::<><><>0<>0<><>::
 ::res://addons/::1783674214
@@ -28,7 +28,7 @@ updates.gd::GDScript::4450020931874397632::1781861122::0::1::::<>MarginContainer
 ::res://addons/godotsteam/linuxarm64/::1783674215
 ::res://addons/godotsteam/osx/::1783674215
 ::res://addons/godotsteam/win32/::1783674215
-::res://addons/godotsteam/win64/::1783685851
+::res://addons/godotsteam/win64/::1784033805
 ::res://assets/::1783674216
 ::res://assets/3Dasset/::1783674216
 ::res://assets/3Dasset/Bouteille_d'oxygène/::1783674215
@@ -68,22 +68,22 @@ Inspiration.wav::AudioStreamWAV::5622585896642754676::1783020540::1783020540::1:
 metal_walk.wav::AudioStreamWAV::8412659260022101408::1783015116::1783015116::1::::<><><>0<>0<>1d87545b3d26a2d38db65e2ae9bf6449<>res://.godot/imported/metal_walk.wav-a5b9ad10fafd651544b55220e6c3c710.sample::
 noyade.wav::AudioStreamWAV::2506822011637354708::1782734716::1782734716::1::::<><><>0<>0<>bd3f9bfd97bb727d6ed58b9fb68ec36f<>res://.godot/imported/noyade.wav-807cdd703f6c63ec553f962a6b84d11a.sample::
 Underwater métallique Sound ambiance.wav::AudioStreamWAV::3858512601959669538::1782734716::1782734716::1::::<><><>0<>0<>4531482700949fae4f73fa26f53e9b9b<>res://.godot/imported/Underwater métallique Sound ambiance.wav-90ffab4b18751e18b6bead9b69e76d9b.sample::
-::res://assets/material/::1783685926
+::res://assets/material/::1783963951
 light.tres::StandardMaterial3D::1250701872041015544::1783170576::0::1::::<><><>0<>0<><>::uid://cyl26rfxtdmeo::::res://assets/3Dasset/Rétro_light/Rétro_light_light.png
-vitre.tres::ShaderMaterial::4085936654365368774::1783685926::0::1::::<><><>0<>0<><>::
-::res://assets/shaders/::1783685927
-bulle_d_air.gdshader::Shader::3736220660924197787::1783685926::0::1::::<><><>0<>0<><>::
-cooldown_interactable.gdshader::Shader::2145586217326011219::1783685926::0::1::::<><><>0<>0<><>::
-damage_shader.gdshader::Shader::3636162463045714159::1783685926::0::1::::<><><>0<>0<><>::
+vitre.tres::ShaderMaterial::4085936654365368774::1783963951::0::1::::<><><>0<>0<><>::
+::res://assets/shaders/::1783963951
+bulle_d_air.gdshader::Shader::3736220660924197787::1783963951::0::1::::<><><>0<>0<><>::
+cooldown_interactable.gdshader::Shader::2145586217326011219::1783963951::0::1::::<><><>0<>0<><>::
+damage_shader.gdshader::Shader::3636162463045714159::1783963951::0::1::::<><><>0<>0<><>::
 DepthBuffer.gdshader::Shader::8148856280626872235::1779623490::0::1::::<><><>0<>0<><>::
-Eau plate.gdshader::Shader::4509248524459197961::1783685927::0::1::::<><><>0<>0<><>::
+Eau plate.gdshader::Shader::4509248524459197961::1783963951::0::1::::<><><>0<>0<><>::
 Eau plate.tres::ShaderMaterial::28912213089547269::1783539302::0::1::::<><><>0<>0<><>::uid://b5ikwubeeeuer::::res://assets/shaders/Eau plate.gdshader
-new_shader_material.tres::ShaderMaterial::5276830920506318419::1783685926::0::1::::<><><>0<>0<><>::uid://buldyiaqsc4tr::::res://assets/shaders/water.gdshader
+new_shader_material.tres::ShaderMaterial::5276830920506318419::1783963951::0::1::::<><><>0<>0<><>::uid://buldyiaqsc4tr::::res://assets/shaders/water.gdshader
 Underwater.tres::ShaderMaterial::1971393692870693028::1783532144::0::1::::<><><>0<>0<><>::uid://blqyc6f825v2h::::res://assets/shaders/underwather.gdshader
-underwather.gdshader::Shader::3192990424675149553::1783685926::0::1::::<><><>0<>0<><>::
-vitre.gdshader::Shader::6418936090427386597::1783685927::0::1::::<><><>0<>0<><>::
-water.gdshader::Shader::3813131142718357947::1783685926::0::1::::<><><>0<>0<><>::
-water_fog.gdshader::Shader::1643250125618022229::1783685926::0::1::::<><><>0<>0<><>::
+underwather.gdshader::Shader::3192990424675149553::1783963951::0::1::::<><><>0<>0<><>::
+vitre.gdshader::Shader::6418936090427386597::1783963951::0::1::::<><><>0<>0<><>::
+water.gdshader::Shader::3813131142718357947::1783963951::0::1::::<><><>0<>0<><>::
+water_fog.gdshader::Shader::1643250125618022229::1783963951::0::1::::<><><>0<>0<><>::
 ::res://assets/texture/::1783674216
 clique.png::CompressedTexture2D::3172443370173607859::1781015900::1781015902::1::::<><><>0<>0<>31f06c34e26dcfc1f856f21271efb9aa<>res://.godot/imported/clique.png-b9784ea83a19fb0cba998d03c73c709f.s3tc.ctex::
 key_en_leton.png::CompressedTexture2D::1234494213754715358::1777551222::1777551280::1::::<><><>0<>0<>054813ce1bee5eb36cce6c30d89faa6c<>res://.godot/imported/key_en_leton.png-70b4a179a2b95a2f4a6ad1c21a81a6c9.ctex::
@@ -99,12 +99,12 @@ potion_soin.tres::Resource/ItemData::546162447525904198::1783621681::0::1::::<><
 scaphandre.tres::Resource/ItemData::314805023015615476::1783682116::0::1::::<><><>0<>0<><>::uid://bycc4sw8qj41p::::res://generalscript/items/item_data.gd<>uid://bwck3pia18cul::::res://textures/Capture d'écran 2026-07-09 202315.png
 test.tres::Resource/ItemData::7745021401354667431::1783682362::0::1::::<><><>0<>0<><>::uid://bin4yeou0ftcw::::res://icon.svg<>uid://bycc4sw8qj41p::::res://generalscript/items/item_data.gd
 Tournevis.tres::Resource/ItemData::2960603676465360896::1782844902::0::1::::<><><>0<>0<><>::uid://ds77yiyi63uyc::::res://textures/tournevis.png<>uid://bycc4sw8qj41p::::res://generalscript/items/item_data.gd
-::res://data/skin/::1783682062
+::res://data/skin/::1783686218
 John.tres::Resource/SkinData::7138959864605887658::1783621356::0::1::::<><><>0<>0<><>::uid://b0pynjcyrs0u0::::res://generalscript/skin_data.gd<>uid://b5o8fp8v86c6p::::res://textures/skin/Capture d'écran 2026-07-09 202053.png
-Marinette.tres::Resource/SkinData::4538819568202070798::1783682062::0::1::::<><><>0<>0<><>::uid://b5o8fp8v86c6p::::res://textures/skin/Capture d'écran 2026-07-09 202053.png<>uid://b0pynjcyrs0u0::::res://generalscript/skin_data.gd
-::res://export/::1783680334
+Marinette.tres::Resource/SkinData::4538819568202070798::1783686217::0::1::::<><><>0<>0<><>::uid://dk4l2a7lhhmkm::::res://textures/skin/Capture d'écran 2026-07-10 142301.png<>uid://b0pynjcyrs0u0::::res://generalscript/skin_data.gd
+::res://export/::1783687834
 steam_appid.txt::TextFile::-1::1782155190::0::1::::<><><>0<>0<><>::
-::res://generalscript/::1783674216
+::res://generalscript/::1783964303
 bulle_d_air.gd::GDScript::8784255869121007822::1779784092::0::1::::<>GPUParticles3D<><>0<>0<><>::
 checkpoint.gd::GDScript::2117895618944156448::1782462142::0::1::::Checkpoint<>Area3D<><>0<>0<><>::
 cinematique.gd::GDScript::1817801165348633254::1783540826::0::1::::<>Node3D<><>0<>0<><>::
@@ -116,8 +116,8 @@ dry_zone.gd::GDScript::5822290048979285382::1783540718::0::1::::<>Area3D<><>0<>0
 health_bar.gd::GDScript::4813328863780622757::1779357652::0::1::::<>Control<><>0<>0<><>::
 InteractionManager.gd::GDScript::1931662018736713029::1783174402::0::1::::<>Node<><>0<>0<><>::
 interaction_indicator.gd::GDScript::3423560980657808295::1781791946::0::1::::InteractionIndicator<>Node3D<><>0<>0<><>::
-inventory_controller.gd::GDScript::7591820868998834659::1783175626::0::1::::InventoryController<>Control<><>0<>0<><>::
-inventory_slot.gd::GDScript::5341772498085075914::1781783378::0::1::::InventorySlots<>Control<><>0<>0<><>::
+inventory_controller.gd::GDScript::7591820868998834659::1783964303::0::1::::InventoryController<>Control<><>0<>0<><>::
+inventory_slot.gd::GDScript::5341772498085075914::1783878509::0::1::::InventorySlots<>Control<><>0<>0<><>::
 lamp.gd::GDScript::1112423160709182532::1783173892::0::1::::Lamp<>RigidBody3D<><>0<>0<><>::
 menu.gd::GDScript::133375888014759919::1783631036::0::1::::GameMenu<>Control<><>0<>0<><>::
 OxygenTank.gd::GDScript::3492070511820409165::1783007688::0::1::::OxygenTank<>Node3D<><>0<>0<><>::
@@ -141,10 +141,10 @@ main.gd::GDScript::7738355163044563778::1783681832::0::1::::<>Node3D<><>0<>0<><>
 steamworks.gd::GDScript::2305301378873550676::1781861378::0::1::::<>Node<><>0<>0<><>::
 ::res://generalscript/multijoueur/proximity_chat/::1783674216
 proximity_chat.gd::GDScript::8293245003461932719::1782464176::0::1::::ProximityChat<>AudioStreamPlayer3D<><>0<>0<><>::
-::res://generalscript/player/::1783674216
-first_player.gd::GDScript::8537028384356939559::1783177390::0::1::::<>CharacterBody3D<><>0<>0<><>::
-third_player.gd::GDScript::8229143879408857064::1783177716::0::1::::<>CharacterBody3D<><>0<>0<><>::
-third_player_aventure.gd::GDScript::2161417865393045485::1783177682::0::1::::<>CharacterBody3D<><>0<>0<><>::
+::res://generalscript/player/::1783878195
+first_player.gd::GDScript::8537028384356939559::1783878132::0::1::::<>CharacterBody3D<><>0<>0<><>::
+third_player.gd::GDScript::8229143879408857064::1783878168::0::1::::<>CharacterBody3D<><>0<>0<><>::
+third_player_aventure.gd::GDScript::2161417865393045485::1783878195::0::1::::<>CharacterBody3D<><>0<>0<><>::
 ::res://generalscript/ui/::1783674216
 blood_vignette.gd::GDScript::4661894006031255147::1782467170::0::1::::<>ColorRect<><>0<>0<><>::
 pause.gd::GDScript::7966072244370099062::1782739388::0::1::::<>Control<><>0<>0<><>::
@@ -155,10 +155,10 @@ skin_selector.gd::GDScript::2624691495184909068::1782401764::0::1::::SkinSelecto
 buoyancy.gd::GDScript::8793496231364686040::1783685927::0::1::::<>RigidBody3D<><>0<>0<><>::
 Water.gd::GDScript::6982289503202950448::1782466592::0::1::::<>Node3D<><>0<>0<><>::
 ::res://occlusions/::1783532283
-::res://scene/::1783682471
+::res://scene/::1783878516
 bulle_d_aire.tscn::PackedScene::1948020075018855809::1779901980::0::1::::<><><>0<>0<><>::uid://bth4ajy2uw1kp::::res://assets/shaders/bulle_d_air.gdshader<>uid://dxffn7333srji::::res://generalscript/bulle_d_air.gd
 capsulle_moonpool.tscn::PackedScene::5975100794847087761::1783532435::0::1::::<><><>0<>0<><>::uid://dqxpx8s6ygtps::::res://assets/3Dasset/capsulle_moonpool/capsulle_moonpool_Metal053C_1K-PNG_Color.png<>uid://n24io0x6kxj2::::res://assets/3Dasset/capsulle_moonpool/capsulle_moonpool_Metal053C_1K-PNG_Metalness-Metal054C_1K-PNG_Color.png<>uid://cjmh415b2ufnn::::res://assets/3Dasset/capsulle_moonpool/capsulle_moonpool_Metal053C_1K-PNG_NormalDX.png<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://dvemjk3jpx0t3::::res://assets/3Dasset/capsulle_moonpool/capsulle_moonpool_Untitled_4.png<>uid://dkvxekqgvwufa::::res://assets/3Dasset/capsulle_moonpool/capsulle_moonpool_Metal054C_1K-PNG_Color.png<>uid://cetrj3kuxpv4u::::res://assets/3Dasset/capsulle_moonpool/capsulle_moonpool_Metal054C_1K-PNG_Metalness-Metal054C_1K-PNG_Color.png<>uid://dyxt40ajq5buc::::res://assets/3Dasset/capsulle_moonpool/capsulle_moonpool_Metal054C_1K-PNG_NormalDX.png<>uid://oagd814pr1f::::res://assets/shaders/Eau plate.tres<>uid://co7mjca6m4a83::::res://generalscript/dry_zone.gd<>uid://4ev5xcvifclj::::res://generalscript/action/climb_out_zone.gd<>uid://dyp1f08o0hvd5::::res://assets/3Dasset/Écoutille/Écoutille_Metal053C_1K-PNG_Color.png<>uid://b4nqhm1qml4tp::::res://assets/3Dasset/Écoutille/Écoutille_Metal053C_1K-PNG_Metalness-Metal053C_1K-PNG_Roughness.png<>uid://cn3apgh08i51l::::res://generalscript/door.gd
-cinematique.tscn::PackedScene::6972779011596964220::1783539012::0::1::::<><><>0<>0<><>::uid://05s6jck5y431::::res://generalscript/cinematique.gd<>uid://chgevti1cjxgd::::res://assets/shaders/new_shader_material.tres<>uid://c6qjj16iy4ise::::res://generalscript/water/Water.gd<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://xoadbpg2pw0d::::res://assets/shaders/water_fog.gdshader<>uid://b5fta0wiqv31h::::res://scene/world_environment.tscn<>uid://4eot55nd23py::::res://generalscript/camera/camera_3d.gd
+cinematique.tscn::PackedScene::6972779011596964220::1783878516::0::1::::<><><>0<>0<><>::uid://05s6jck5y431::::res://generalscript/cinematique.gd<>uid://chgevti1cjxgd::::res://assets/shaders/new_shader_material.tres<>uid://c6qjj16iy4ise::::res://generalscript/water/Water.gd<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://xoadbpg2pw0d::::res://assets/shaders/water_fog.gdshader<>uid://b5fta0wiqv31h::::res://scene/world_environment.tscn<>uid://4eot55nd23py::::res://generalscript/camera/camera_3d.gd
 climb_out_zone.tscn::PackedScene::8161656438283909207::1783682424::0::1::::<><><>0<>0<><>::uid://4ev5xcvifclj::::res://generalscript/action/climb_out_zone.gd
 cooldown_interactable.tscn::PackedScene::3169778842189812610::1781555772::0::1::::<><><>0<>0<><>::uid://lvwohiqulanj::::res://generalscript/cooldown_interactable.gd<>uid://5tlqyg567pkt::::res://assets/shaders/cooldown_interactable.gdshader<>uid://bin4yeou0ftcw::::res://icon.svg
 door.tscn::PackedScene::368855422338888141::1782578688::0::1::::<><><>0<>0<><>::uid://cn3apgh08i51l::::res://generalscript/door.gd
@@ -182,20 +182,20 @@ PoisonPickup.tscn::PackedScene::7545941546223886407::1782465030::0::1::::<><><>0
 PotionPickup.tscn::PackedScene::8313861841450911954::1782465050::0::1::::<><><>0<>0<><>::uid://4mr7qhlw7dab::::res://generalscript/items/KeyPickup.gd<>uid://h1thlmqjsrvy::::res://data/items/potion_soin.tres<>uid://dnusr1e2v16lu::::res://generalscript/container_of_markers.gd
 scaphandre.tscn::PackedScene::8769730223808279561::1783620749::0::1::::<><><>0<>0<><>::uid://4mr7qhlw7dab::::res://generalscript/items/KeyPickup.gd<>uid://eqq17nw7sxtc::::res://data/items/scaphandre.tres<>uid://dnusr1e2v16lu::::res://generalscript/container_of_markers.gd
 TournevisPickup.tscn::PackedScene::3759415423233684964::1781781410::0::1::::<><><>0<>0<><>::uid://4mr7qhlw7dab::::res://generalscript/items/KeyPickup.gd<>uid://bigeye056v31e::::res://data/items/Tournevis.tres<>uid://dnusr1e2v16lu::::res://generalscript/container_of_markers.gd<>uid://dpymt3b2ihur0::::res://assets/3Dasset/Tournevis/tournevis_Image_0.png
-::res://scene/player/::1783686160
-first_player.tscn::PackedScene::8640101984181616196::1783681970::0::1::::<><><>0<>0<><>::uid://dtvnu0n5e2unf::::res://generalscript/player/first_player.gd<>uid://c01idnck4g74::::res://generalscript/camera/camera_3d_third_player.gd<>uid://dr4fje4e8yvym::::res://assets/audio/metal_walk.wav<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://2rygrccrvtwv::::res://generalscript/InteractionManager.gd<>uid://20vuutiylqi0::::res://scene/bulle_d_aire.tscn<>uid://dxxnquukfyrbg::::res://assets/animation/animation_mixamo.res<>uid://dvo6omsoerlmd::::res://scene/inventory_controller.tscn<>uid://dwxel23x2q8eq::::res://assets/animation/animation_player.res<>uid://catu28tdn0umf::::res://generalscript/health_bar.gd<>uid://br2ncgt0tamff::::res://assets/shaders/damage_shader.gdshader<>uid://b7oiyiomg3v0f::::res://generalscript/ui/blood_vignette.gd<>uid://dxfyh4r42vfpu::::res://scene/ui/pause.tscn<>uid://cbodrsfy452qi::::res://scene/Système/interaction_indicator.tscn<>uid://dqfkse1uodiax::::res://generalscript/multijoueur/proximity_chat/proximity_chat.gd<>uid://bbyk80cuae27i::::res://assets/audio/noyade.wav<>uid://cmdvfyq2mhtvg::::res://assets/audio/Inspiration.wav
-third_player.tscn::PackedScene::2476662532072176449::1783686131::0::1::::<><><>0<>0<><>::uid://dpii2d2br3cl1::::res://generalscript/player/third_player.gd<>uid://dr4fje4e8yvym::::res://assets/audio/metal_walk.wav<>uid://c01idnck4g74::::res://generalscript/camera/camera_3d_third_player.gd<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://2rygrccrvtwv::::res://generalscript/InteractionManager.gd<>uid://dvo6omsoerlmd::::res://scene/inventory_controller.tscn<>uid://20vuutiylqi0::::res://scene/bulle_d_aire.tscn<>uid://dxxnquukfyrbg::::res://assets/animation/animation_mixamo.res<>uid://dxfyh4r42vfpu::::res://scene/ui/pause.tscn<>uid://cbodrsfy452qi::::res://scene/Système/interaction_indicator.tscn<>uid://dqfkse1uodiax::::res://generalscript/multijoueur/proximity_chat/proximity_chat.gd<>uid://catu28tdn0umf::::res://generalscript/health_bar.gd<>uid://br2ncgt0tamff::::res://assets/shaders/damage_shader.gdshader<>uid://b7oiyiomg3v0f::::res://generalscript/ui/blood_vignette.gd<>uid://bbyk80cuae27i::::res://assets/audio/noyade.wav<>uid://cmdvfyq2mhtvg::::res://assets/audio/Inspiration.wav
-third_player_aventure.tscn::PackedScene::1552615601852157057::1783686160::0::1::::<><><>0<>0<><>::uid://52aiblwtbllt::::res://generalscript/player/third_player_aventure.gd<>uid://dr4fje4e8yvym::::res://assets/audio/metal_walk.wav<>uid://c01idnck4g74::::res://generalscript/camera/camera_3d_third_player.gd<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://2rygrccrvtwv::::res://generalscript/InteractionManager.gd<>uid://20vuutiylqi0::::res://scene/bulle_d_aire.tscn<>uid://dxxnquukfyrbg::::res://assets/animation/animation_mixamo.res<>uid://dvo6omsoerlmd::::res://scene/inventory_controller.tscn<>uid://catu28tdn0umf::::res://generalscript/health_bar.gd<>uid://br2ncgt0tamff::::res://assets/shaders/damage_shader.gdshader<>uid://b7oiyiomg3v0f::::res://generalscript/ui/blood_vignette.gd<>uid://dxfyh4r42vfpu::::res://scene/ui/pause.tscn<>uid://cbodrsfy452qi::::res://scene/Système/interaction_indicator.tscn<>uid://dqfkse1uodiax::::res://generalscript/multijoueur/proximity_chat/proximity_chat.gd<>uid://bbyk80cuae27i::::res://assets/audio/noyade.wav<>uid://cmdvfyq2mhtvg::::res://assets/audio/Inspiration.wav
-::res://scene/Système/::1783682362
+::res://scene/player/::1783964303
+first_player.tscn::PackedScene::8640101984181616196::1783964303::0::1::::<><><>0<>0<><>::uid://dtvnu0n5e2unf::::res://generalscript/player/first_player.gd<>uid://c01idnck4g74::::res://generalscript/camera/camera_3d_third_player.gd<>uid://dr4fje4e8yvym::::res://assets/audio/metal_walk.wav<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://2rygrccrvtwv::::res://generalscript/InteractionManager.gd<>uid://20vuutiylqi0::::res://scene/bulle_d_aire.tscn<>uid://dxxnquukfyrbg::::res://assets/animation/animation_mixamo.res<>uid://dvo6omsoerlmd::::res://scene/inventory_controller.tscn<>uid://dwxel23x2q8eq::::res://assets/animation/animation_player.res<>uid://catu28tdn0umf::::res://generalscript/health_bar.gd<>uid://br2ncgt0tamff::::res://assets/shaders/damage_shader.gdshader<>uid://b7oiyiomg3v0f::::res://generalscript/ui/blood_vignette.gd<>uid://dxfyh4r42vfpu::::res://scene/ui/pause.tscn<>uid://cbodrsfy452qi::::res://scene/Système/interaction_indicator.tscn<>uid://dqfkse1uodiax::::res://generalscript/multijoueur/proximity_chat/proximity_chat.gd<>uid://bbyk80cuae27i::::res://assets/audio/noyade.wav<>uid://cmdvfyq2mhtvg::::res://assets/audio/Inspiration.wav
+third_player.tscn::PackedScene::2476662532072176449::1783878167::0::1::::<><><>0<>0<><>::uid://dpii2d2br3cl1::::res://generalscript/player/third_player.gd<>uid://dr4fje4e8yvym::::res://assets/audio/metal_walk.wav<>uid://c01idnck4g74::::res://generalscript/camera/camera_3d_third_player.gd<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://2rygrccrvtwv::::res://generalscript/InteractionManager.gd<>uid://dvo6omsoerlmd::::res://scene/inventory_controller.tscn<>uid://20vuutiylqi0::::res://scene/bulle_d_aire.tscn<>uid://dxxnquukfyrbg::::res://assets/animation/animation_mixamo.res<>uid://dxfyh4r42vfpu::::res://scene/ui/pause.tscn<>uid://cbodrsfy452qi::::res://scene/Système/interaction_indicator.tscn<>uid://dqfkse1uodiax::::res://generalscript/multijoueur/proximity_chat/proximity_chat.gd<>uid://catu28tdn0umf::::res://generalscript/health_bar.gd<>uid://br2ncgt0tamff::::res://assets/shaders/damage_shader.gdshader<>uid://b7oiyiomg3v0f::::res://generalscript/ui/blood_vignette.gd<>uid://bbyk80cuae27i::::res://assets/audio/noyade.wav<>uid://cmdvfyq2mhtvg::::res://assets/audio/Inspiration.wav
+third_player_aventure.tscn::PackedScene::1552615601852157057::1783878532::0::1::::<><><>0<>0<><>::uid://52aiblwtbllt::::res://generalscript/player/third_player_aventure.gd<>uid://dr4fje4e8yvym::::res://assets/audio/metal_walk.wav<>uid://c01idnck4g74::::res://generalscript/camera/camera_3d_third_player.gd<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://2rygrccrvtwv::::res://generalscript/InteractionManager.gd<>uid://20vuutiylqi0::::res://scene/bulle_d_aire.tscn<>uid://dxxnquukfyrbg::::res://assets/animation/animation_mixamo.res<>uid://dvo6omsoerlmd::::res://scene/inventory_controller.tscn<>uid://catu28tdn0umf::::res://generalscript/health_bar.gd<>uid://br2ncgt0tamff::::res://assets/shaders/damage_shader.gdshader<>uid://b7oiyiomg3v0f::::res://generalscript/ui/blood_vignette.gd<>uid://dxfyh4r42vfpu::::res://scene/ui/pause.tscn<>uid://cbodrsfy452qi::::res://scene/Système/interaction_indicator.tscn<>uid://dqfkse1uodiax::::res://generalscript/multijoueur/proximity_chat/proximity_chat.gd<>uid://bbyk80cuae27i::::res://assets/audio/noyade.wav<>uid://cmdvfyq2mhtvg::::res://assets/audio/Inspiration.wav
+::res://scene/Système/::1783686220
 checkpoint.tscn::PackedScene::263033122461878124::1782463294::0::1::::<><><>0<>0<><>::uid://5f6owymgfhho::::res://generalscript/checkpoint.gd
 corde_visuelle.tscn::PackedScene::7856067840875608679::1782827682::0::1::::<><><>0<>0<><>::uid://drstorrvp701c::::res://generalscript/corde_visuelle.gd
 interaction_indicator.tscn::PackedScene::4872144963330493460::1781791946::0::1::::<><><>0<>0<><>::uid://bo1nsw3kf5e52::::res://generalscript/interaction_indicator.gd<>uid://blg0xcx3hb1id::::res://assets/texture/clique.png
-SkinRegistry.tscn::PackedScene::6398252797221679534::1783682362::0::1::::<><><>0<>0<><>::uid://kluy5e82sjoe::::res://generalscript/skin_registry.gd<>uid://b0pynjcyrs0u0::::res://generalscript/skin_data.gd<>uid://c8yfvjusfo72u::::res://data/skin/John.tres<>uid://b5wvxvuri6tfa::::res://data/skin/Marinette.tres
-::res://scene/ui/::1783674217
+SkinRegistry.tscn::PackedScene::6398252797221679534::1783686220::0::1::::<><><>0<>0<><>::uid://kluy5e82sjoe::::res://generalscript/skin_registry.gd<>uid://b0pynjcyrs0u0::::res://generalscript/skin_data.gd<>uid://c8yfvjusfo72u::::res://data/skin/John.tres<>uid://b5wvxvuri6tfa::::res://data/skin/Marinette.tres
+::res://scene/ui/::1783878509
 credi.tscn::PackedScene::6377321136654374865::1783671852::0::1::::<><><>0<>0<><>::
 document_ui.tscn::PackedScene::127258884118132549::1783532706::0::1::::<><><>0<>0<><>::uid://db0ub6oqy6yor::::res://generalscript/items/document_ui.gd
 health_bar.tscn::PackedScene::6178927735729675401::1782466596::0::1::::<><><>0<>0<><>::uid://catu28tdn0umf::::res://generalscript/health_bar.gd
-inventory_slot.tscn::PackedScene::3534323819634449307::1781783378::0::1::::<><><>0<>0<><>::uid://ciduhh1canu7s::::res://generalscript/inventory_slot.gd
+inventory_slot.tscn::PackedScene::3534323819634449307::1783878509::0::1::::<><><>0<>0<><>::uid://ciduhh1canu7s::::res://generalscript/inventory_slot.gd
 menu.tscn::PackedScene::5880615140425222987::1783631075::0::1::::<><><>0<>0<><>::uid://chgevti1cjxgd::::res://assets/shaders/new_shader_material.tres<>uid://4eot55nd23py::::res://generalscript/camera/camera_3d.gd<>uid://b5uxfxk3tsy6::::res://generalscript/menu.gd<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://b5fta0wiqv31h::::res://scene/world_environment.tscn<>uid://c6qjj16iy4ise::::res://generalscript/water/Water.gd<>uid://xoadbpg2pw0d::::res://assets/shaders/water_fog.gdshader<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://uifixwkh00rs::::res://scene/ui/settings.tscn<>uid://cw4hsu1k3j1ir::::res://scene/ui/credi.tscn<>uid://bdnojx8p0nigi::::res://generalscript/ui/skin_selector.gd
 pause.tscn::PackedScene::8785398602701445598::1782739544::0::1::::<><><>0<>0<><>::uid://dlq3btgi5bv63::::res://generalscript/ui/pause.gd<>uid://uifixwkh00rs::::res://scene/ui/settings.tscn
 settings.tscn::PackedScene::1420611008595668528::1783533611::0::1::::<><><>0<>0<><>::uid://chdeu0ap46jj8::::res://generalscript/ui/settings.gd
@@ -208,6 +208,6 @@ Capture d'écran 2026-07-09 202315.png::CompressedTexture2D::3935361971639667043
 hamer.png::CompressedTexture2D::4452649930187170253::1782844898::1782844902::1::::<><><>0<>0<>2032d57a843ab0169d33d000dcb0d544<>res://.godot/imported/hamer.png-73c1031534325e26e72fcaf6ef84fd56.ctex::
 light.png::CompressedTexture2D::7603216045116302246::1783177972::1783177972::1::::<><><>0<>0<>dc3778c93371a95f7c04fd15c5768781<>res://.godot/imported/light.png-6eaf8f508bbd1adf2c3cf7dcbf008f14.ctex::
 tournevis.png::CompressedTexture2D::8490707585184184658::1782844860::1782844902::1::::<><><>0<>0<>b925eefd5c3086ae2b68743d211cb8eb<>res://.godot/imported/tournevis.png-745427698ad2999b842f0ab545318537.ctex::
-::res://textures/skin/::1783686211
+::res://textures/skin/::1783686212
 Capture d'écran 2026-07-09 202053.png::CompressedTexture2D::4523000710949989917::1783621325::1783621356::1::::<><><>0<>0<>93ad2dcd46f3dcdaff31bf5ff979e9a5<>res://.godot/imported/Capture d'écran 2026-07-09 202053.png-ef784d55680cdb5c19a5525894c90494.ctex::
 Capture d'écran 2026-07-10 142301.png::CompressedTexture2D::7921733595626398488::1783686203::1783686212::1::::<><><>0<>0<>cabf25da03fb000cdc00e69dd6439952<>res://.godot/imported/Capture d'écran 2026-07-10 142301.png-4fca054a4c36651a98a654bf768cbfea.ctex::
