@@ -1,5 +1,43 @@
 extends CharacterBody3D
 
+# 🆕 BRAS GAUCHE — mêmes mécanismes que le droit, dédié au portage à deux mains
+@onready var left_arm_ik: Node = $Marker3D/PhysicsMan/Armature/Skeleton3D/TwoBoneIK_arme_left
+@onready var hand_left_target: Marker3D = $main_gauche
+var _left_arm_ik_influence: float = 0.0
+
+# 🆕 PORTAGE D'OBJETS À DEUX MAINS
+@onready var carry_spring_arm: SpringArm3D = $CameraPivot/CarrySpringArm3D
+@onready var carry_target_marker: Marker3D = $CameraPivot/CarrySpringArm3D/CarryTargetMarker
+
+var isCarryingObject: bool = false
+var carriedObject = null
+var carriedLeftMarker: Marker3D = null
+var carriedRightMarker: Marker3D = null
+var _is_carrying_left: bool = false
+
+@export_group("Portage à deux mains")
+@export var carry_min_spring_length: float = 1.0
+@export var carry_max_spring_length: float =1.5
+@export var carry_zoom_speed: float = 0.1          # mètres par cran de molette
+@export var carry_rotation_speed: float = 90.0     # degrés/seconde, R ou T maintenu
+@export var carry_left_arm_ik_speed: float = 10.0
+
+
+var climb_blend_val := 0.0
+
+# ── ÉCHELLE (grimpe façon Minecraft) ───────────────────────────────────────────
+@export_group("Échelle")
+@export var ladder_climb_speed: float = 2.5     # Vitesse de montée/descente (m/s)
+@export var ladder_strafe_speed: float = 1.2    # Vitesse de glissement latéral sur l'échelle
+@export_range(0.0, 1.0) var ladder_grab_deadzone: float = 0.35  # Seuil pour s'accrocher (0-1)
+@export var ladder_allow_jump_off: bool = true  # Saut = se détacher en repoussant le joueur
+@export var ladder_face_wall: bool = false      # Oriente le corps face au mur pendant la grimpe (teste-le, cf. notes)
+
+var current_ladder: Ladder3D = null             # Échelle actuellement en zone (peut être null)
+var is_climbing_ladder: bool = false
+var _nearby_ladders: Array[Ladder3D] = []       # Si plusieurs zones d'échelle se chevauchent
+var _ladder_release_cooldown: float = 0.0       # Anti-ré-accrochage instantané après un lâcher
+
 @onready var lamp_aim_marker: Marker3D = $CameraPivot/LampAimMarker
 
 var wearing_heavy_suit = false
@@ -196,10 +234,11 @@ func set_checkpoint(pos: Vector3) -> void:
 		print("[Checkpoint] Nouveau point de réapparition enregistré.")
 
 
-## Appelée par le script du niveau juste après le positionnement initial du joueur
-## (impossible de le faire dans _ready() : le niveau n'a pas encore fixé la position à ce stade)
+# 🛠️ On remplace "authority" par "any_peer" pour autoriser le serveur à l'exécuter
+@rpc("any_peer", "call_local", "reliable")
 func set_initial_spawn(pos: Vector3) -> void:
 	_initial_spawn_position = pos
+	global_position = pos
 
 func _oxygen_key_for(data: ItemData) -> String:
 	return data.item_id if data else ""
@@ -266,10 +305,11 @@ func _ready():
 	if not is_multiplayer_authority():
 		$CameraPivot/SpringArm3D/Camera3D.current = false
 		$InventoryController/CanvasLayer/HealthBar.visible = false
-	$CameraPivot/SpringArm3D.add_excluded_object(self)
+	carry_spring_arm.add_excluded_object(get_rid())
 	var ray_vector = Vector3(0, -2.5, 0)
 	anim_tree.active = true
 	right_arm_ik.active = true
+	left_arm_ik.active = true
 	ik_left.active = true
 	ik_right.active = true
 	lookhead.active = true
@@ -357,6 +397,22 @@ func _input(event):
 				_try_inspect_equipped_item()
 			if event.is_action_pressed("interact"):
 				_try_use_equipped_item()
+				
+			# 🆕 Molette : ajuste la distance de l'objet porté (longueur du spring arm)
+			if isCarryingObject and event is InputEventMouseButton and event.pressed:
+				if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+					carry_spring_arm.spring_length = clamp(
+						carry_spring_arm.spring_length + carry_zoom_speed,
+						carry_min_spring_length, carry_max_spring_length
+					)
+				elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+					carry_spring_arm.spring_length = clamp(
+						carry_spring_arm.spring_length - carry_zoom_speed,
+						carry_min_spring_length, carry_max_spring_length
+					)
+
+			if event.is_action_pressed("interact"):
+				_try_inspect_equipped_item()
 			
 func _try_use_equipped_item() -> void:
 	var inventory_ui = $InventoryController/CanvasLayer/InventoryUI
@@ -374,7 +430,8 @@ func _try_use_equipped_item() -> void:
 			inventory_ui._use_consumable(inventory_ui.equipped_slot)
 		ItemData.ItemType.INSPECTABLE:
 			# Ouvre le document
-			document_ui.open(data)
+			if document_ui.is_open:
+				document_ui.open(data)
 		ItemData.ItemType.TOOL:
 			# Même fonction que depuis l'inventaire
 			inventory_ui._use_tool(inventory_ui.equipped_slot)
@@ -397,7 +454,8 @@ func _try_inspect_equipped_item() -> void:
 		print("[Inspection] Cet item n'est pas un document.")
 		return
 
-	document_ui.open(data)
+	if document_ui.is_open:
+		document_ui.open(data)
 
 
 func _is_in_dry_zone(pos: Vector3) -> bool:
@@ -506,6 +564,7 @@ func _process(delta):
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():
+		_update_climb_animation(delta)
 	# ── Synchronisation état IK vers les marionnettes ─────────────────────────
 		_net_velocity     = velocity
 		_net_is_on_floor  = is_on_floor()
@@ -525,6 +584,11 @@ func _physics_process(delta: float) -> void:
 	if _is_equipping_clothing:
 		_update_equip_clothing_transition(delta)
 		velocity = Vector3.ZERO
+		move_and_slide()
+		return
+		
+	# Échelle (court-circuite la marche/nage tant que le joueur grimpe)
+	if _handle_ladder_physics(delta):
 		move_and_slide()
 		return
 		
@@ -661,8 +725,10 @@ func _physics_process(delta: float) -> void:
 	
 		#Système d'interaction
 		if Input.is_action_pressed("interact"):
-			if not isHoldingObject:
-				InteractWithDoor()  # Saisie au premier frame
+			if not isHoldingObject and not isCarryingObject:   # 🆕
+				InteractWithDoor()
+				if not isHoldingObject:   # 🆕 pas une porte : on tente un objet à deux mains
+					InteractWithGrabbable()
 		else:
 			if isHoldingObject and is_instance_valid(heldObject):
 					heldObject.rpc_release_grab.rpc(multiplayer.get_unique_id())
@@ -671,7 +737,10 @@ func _physics_process(delta: float) -> void:
 			heldObject = null
 			heldMarker = null
 			is_hand_interact_active = false
+			if isCarryingObject:   # 🆕
+				_release_carry()
 		maintainInteraction()
+		maintainCarry(delta)   # 🆕
 		
 		if is_multiplayer_authority():
 			_update_camera_attachment(is_swimming)   # ← AJOUT
@@ -1072,6 +1141,74 @@ func maintainInteraction() -> void:
 	heldObject.rpc_update_pull_target.rpc(multiplayer.get_unique_id(), target_pos)
 		
 		
+func InteractWithGrabbable() -> void:
+	$CameraPivot/PhysicsRayCast.force_raycast_update()
+	if not $CameraPivot/PhysicsRayCast.is_colliding():
+		return
+	var collider = $CameraPivot/PhysicsRayCast.get_collider()
+	if not collider.is_in_group("Grabbable"):
+		return
+	if collider.get_node_or_null("GrabMarkerLeft") == null or collider.get_node_or_null("GrabMarkerRight") == null:
+		push_warning("Grabbable '%s' : marqueurs manquants." % collider.name)
+		return
+
+	collider.rpc_request_grab.rpc(multiplayer.get_unique_id())
+
+	carry_spring_arm.spring_length = clamp(
+		camera_pivot.global_position.distance_to(collider.global_position),
+		carry_min_spring_length, carry_max_spring_length
+	)
+	carry_spring_arm.add_excluded_object(collider.get_rid())   # 🆕 empêche l'objet de bloquer son propre spring arm
+
+	_rpc_sync_start_carry.rpc(collider.get_path())
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_sync_start_carry(object_path: NodePath) -> void:
+	var obj := get_node_or_null(object_path)
+	if obj == null:
+		return
+	var left_marker: Marker3D = obj.get_node_or_null("GrabMarkerLeft")
+	var right_marker: Marker3D = obj.get_node_or_null("GrabMarkerRight")
+	if left_marker == null or right_marker == null:
+		return
+
+	isCarryingObject = true
+	carriedObject = obj
+	carriedLeftMarker = left_marker
+	carriedRightMarker = right_marker
+	is_hand_interact_active = true
+	_is_carrying_left = true
+
+
+func _release_carry() -> void:
+	if is_instance_valid(carriedObject):
+		carriedObject.rpc_release_grab.rpc(multiplayer.get_unique_id())
+		carry_spring_arm.remove_excluded_object(carriedObject.get_rid())   # 🆕
+	_rpc_sync_end_carry.rpc()
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_sync_end_carry() -> void:
+	isCarryingObject = false
+	carriedObject = null
+	carriedLeftMarker = null
+	carriedRightMarker = null
+	is_hand_interact_active = false
+	_is_carrying_left = false
+
+
+func maintainCarry(delta: float) -> void:
+	if not (isCarryingObject and is_instance_valid(carriedObject)):
+		return
+
+	if Input.is_action_pressed("rotation_r"):
+		carriedObject.rpc_apply_rotation.rpc(multiplayer.get_unique_id(), Vector3.UP, deg_to_rad(carry_rotation_speed) * delta)
+	if Input.is_action_pressed("rotation_t"):
+		var pitch_axis: Vector3 = camera_pivot.global_transform.basis.x
+		carriedObject.rpc_apply_rotation.rpc(multiplayer.get_unique_id(), pitch_axis, deg_to_rad(carry_rotation_speed) * delta)
+
+	carriedObject.rpc_update_pull_target.rpc(multiplayer.get_unique_id(), carry_target_marker.global_position)
 # ----------------------------------------------------------------
 # FONCTION POUR GÉRER LE SMOOTHING DE LA MAIN (IK)
 # ----------------------------------------------------------------
@@ -1135,13 +1272,28 @@ func _update_hand_ik(delta: float) -> void:
 	if is_hand_interact_active:
 		if heldMarker != null:
 			hand_right_target.global_position = heldMarker.global_transform.origin
+		elif carriedRightMarker != null:   # 🆕
+			hand_right_target.global_position = carriedRightMarker.global_transform.origin
 		elif _pickup_marker != null:
 			hand_right_target.global_position = _pickup_marker.global_transform.origin
-	elif _is_aiming_lamp and lamp_aim_marker:   # 🆕
+	elif _is_aiming_lamp and lamp_aim_marker:
 		hand_right_target.global_position = lamp_aim_marker.global_position
 	else:
 		hand_right_target.global_position = skeleton.to_global(
 			skeleton.get_bone_global_pose(skeleton.find_bone("mixamorig_RightHand")).origin
+		)
+
+	# 🆕 BRAS GAUCHE : même principe, dédié au portage à deux mains
+	var left_target_influence: float = 1.0 if _is_carrying_left else 0.0
+	_left_arm_ik_influence = lerp(_left_arm_ik_influence, left_target_influence, carry_left_arm_ik_speed * delta)
+	if left_arm_ik:
+		left_arm_ik.influence = _left_arm_ik_influence
+
+	if _is_carrying_left and carriedLeftMarker != null:
+		hand_left_target.global_position = carriedLeftMarker.global_transform.origin
+	else:
+		hand_left_target.global_position = skeleton.to_global(
+			skeleton.get_bone_global_pose(skeleton.find_bone("mixamorig_LeftHand")).origin
 		)
 			
 func find_marker_node(door_node: Node) -> Node:
@@ -1304,11 +1456,13 @@ func _die() -> void:
 		return
 	is_dead = true
 
-	# 🆕 Drop de l'inventaire AVANT de prévenir les autres pairs — au moment exact de la mort
+	if isCarryingObject and is_instance_valid(carriedObject):   # 🆕
+		carriedObject.rpc_release_grab.rpc(multiplayer.get_unique_id())
+
 	var inventory_ui = $InventoryController/CanvasLayer/InventoryUI
 	inventory_ui.drop_all_on_death()
 
-	_rpc_sync_death.rpc()   # 🆕 diffuse le ragdoll à tout le monde, autorité incluse via call_local
+	_rpc_sync_death.rpc()
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -1317,6 +1471,7 @@ func _rpc_sync_death() -> void:
 	await get_tree().process_frame
 
 	right_arm_ik.active = false
+	left_arm_ik.active = false
 	ik_left.active = false
 	ik_right.active = false
 	lookhead.active = false
@@ -1377,6 +1532,7 @@ func _rpc_sync_respawn(respawn_pos: Vector3) -> void:
 		skeleton.reset_bone_pose(_pelvis_bone_idx)
 
 	right_arm_ik.active = true
+	left_arm_ik.active = true
 	ik_left.active = true
 	ik_right.active = true
 	lookhead.active = true
@@ -1394,6 +1550,11 @@ func _rpc_sync_respawn(respawn_pos: Vector3) -> void:
 	_is_cooldown_interacting = false
 	_is_climbing_out = false
 	_is_equipping_clothing = false
+	isCarryingObject = false   # 🆕
+	carriedObject = null       # 🆕
+	carriedLeftMarker = null   # 🆕
+	carriedRightMarker = null  # 🆕
+	_is_carrying_left = false  # 🆕
 	_update_camera_attachment(false)
 
 	global_position = respawn_pos
@@ -1896,3 +2057,100 @@ func _handle_footsteps(delta: float) -> void:
 	else:
 		# Le joueur est presque à l'arrêt, on garde l'accumulateur chargé pour le prochain départ
 		_step_distance_accumulator = step_interval * 0.8
+		
+# ── ÉCHELLE : API appelée par Ladder3D (Area3D) ────────────────────────────────
+## Le joueur entre dans la zone de grimpe d'une échelle
+func _enter_ladder_zone(ladder: Ladder3D) -> void:
+	if not _nearby_ladders.has(ladder):
+		_nearby_ladders.append(ladder)
+	current_ladder = _nearby_ladders.back()
+
+## Le joueur quitte la zone de grimpe d'une échelle
+func _exit_ladder_zone(ladder: Ladder3D) -> void:
+	_nearby_ladders.erase(ladder)
+	current_ladder = _nearby_ladders.back() if not _nearby_ladders.is_empty() else null
+	if current_ladder == null:
+		is_climbing_ladder = false
+		
+		
+# ── ÉCHELLE : physique de grimpe ────────────────────────────────────────────────
+## Gère la grimpe façon Minecraft : marcher vers l'échelle fait monter, marcher en
+## arrière fait descendre. Retourne true si le joueur grimpe activement ce frame
+## (le mouvement normal doit alors être court-circuité par l'appelant).
+func _handle_ladder_physics(delta: float) -> bool:
+	if current_ladder == null:
+		is_climbing_ladder = false
+		return false
+
+	# Seule l'autorité réseau du joueur simule sa propre physique de grimpe
+	if not is_multiplayer_authority():
+		return is_climbing_ladder
+
+	if _ladder_release_cooldown > 0.0:
+		_ladder_release_cooldown -= delta
+
+	var into_dir: Vector3 = current_ladder.get_into_direction()
+
+	# Direction de déplacement voulue par le joueur (même logique que la marche normale)
+	var input_dir := Input.get_vector("ui_right", "ui_left", "ui_down", "ui_up")
+	var cam_basis = camera_pivot.global_transform.basis
+	var wish_dir: Vector3 = cam_basis * Vector3(input_dir.x, 0, input_dir.y)
+	wish_dir.y = 0.0
+	var has_input := wish_dir.length() > 0.05
+	if has_input:
+		wish_dir = wish_dir.normalized()
+
+	# > 0 : le joueur marche VERS l'échelle (montera) / < 0 : à l'opposé (descendra)
+	var push_amount: float = wish_dir.dot(into_dir) if has_input else 0.0
+
+	# ── Accroche : il faut pousser franchement vers l'échelle pour s'y accrocher ──
+	if not is_climbing_ladder:
+		if _ladder_release_cooldown > 0.0 or push_amount <= ladder_grab_deadzone:
+			return false
+		is_climbing_ladder = true
+
+	# ── Saut = lâcher l'échelle en repoussant le joueur en arrière ─────────────
+	if ladder_allow_jump_off and Input.is_action_just_pressed("ui_accept"):
+		is_climbing_ladder = false
+		_ladder_release_cooldown = 0.25
+		velocity = -into_dir * WALK_SPEED + Vector3.UP * (JUMP_VELOCITY * 0.6)
+		return true
+
+	# ── Montée / descente : la vitesse verticale suit l'intention du joueur ────
+	var target_vertical_speed: float = (push_amount * ladder_climb_speed) if has_input else 0.0
+	velocity.y = move_toward(velocity.y, target_vertical_speed, ladder_climb_speed * 8.0 * delta)
+
+	# ── Glissement latéral le long de l'échelle ─────────────────────────────────
+	var side_dir: Vector3 = into_dir.cross(Vector3.UP)
+	var side_amount: float = wish_dir.dot(side_dir) if has_input else 0.0
+	var lateral_velocity: Vector3 = side_dir * side_amount * ladder_strafe_speed
+	velocity.x = lateral_velocity.x
+	velocity.z = lateral_velocity.z
+
+	# ── Le personnage fait face au mur pendant la grimpe ────────────────────────
+	if ladder_face_wall:
+		var target_yaw := atan2(-into_dir.x, -into_dir.z)
+		rotation.y = lerp_angle(rotation.y, target_yaw, 10.0 * delta)
+
+	# ── Sortie en bas : on touche le sol en descendant (ou à l'arrêt) ───────────
+	if is_on_floor() and target_vertical_speed <= 0.0:
+		is_climbing_ladder = false
+		_ladder_release_cooldown = 0.15
+		return false
+
+	return true
+	
+## Pilote l'anim de grimpe : fait apparaître/disparaître le blend, et règle le
+## sens de lecture du clip (avant = monte, arrière = descend, ~0 = suspendu).
+## Appelée à la fois pendant la grimpe (court-circuit physique) et pendant
+## update_animations() en temps normal (pour redescendre le blend à 0).
+func _update_climb_animation(delta: float) -> void:
+	var target_climb_val = 1.0 if is_climbing_ladder else 0.0
+	climb_blend_val = lerp(climb_blend_val, target_climb_val, 7.0 * delta)
+	anim_tree.set("parameters/climbing/blend_amount", climb_blend_val)
+
+	# Sens/vitesse de lecture du clip : >0 monte, <0 descend, ~0 suspendu
+	var climb_speed_ratio := 0.0
+	if is_climbing_ladder:
+		climb_speed_ratio = clamp(velocity.y / ladder_climb_speed, -1.0, 1.0)
+	anim_tree.set("parameters/TimeScale/scale", climb_speed_ratio)

@@ -22,17 +22,20 @@ func _add_player(id: int) -> void:
 	var player := PlayerScene.instantiate()
 	player.name = str(id)
 	
-	# 🆕 On détermine quel point de spawn utiliser.
-	# players.get_child_count() donne 0 pour le 1er joueur, 1 pour le 2ème, etc.
-	# Le modulo (%) permet de revenir à 0 si jamais il y a plus de joueurs que de points.
+	# Si tu attribues l'autorité ici, c'est très bien :
+	player.set_multiplayer_authority(id)
+	
 	var spawn_index = players.get_child_count() % spawn_points.size()
 	var spawn_pos = spawn_points[spawn_index].global_position
 	
+	# 1. On applique la position locale avant d'entrer dans l'arbre
+	player.position = spawn_pos
+	
+	# 2. On ajoute à l'arbre (le MultiplayerSpawner réplique l'apparition chez le client)
 	players.add_child(player, true)
 	
-	# 🆕 On assigne la position unique au joueur
-	player.global_position = spawn_pos
-	player.set_initial_spawn(spawn_pos)
+	# 3. Le serveur ordonne au client de définir sa position de spawn
+	player.rpc("set_initial_spawn", spawn_pos)
 	
 	print("Joueur ", id, " a spawn à l'index ", spawn_index, " (", spawn_pos, ")")
 

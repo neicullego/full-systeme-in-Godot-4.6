@@ -9,3 +9,10 @@ res://assets/shaders/water_fog.gdshader
 res://assets/shaders/cooldown_interactable.gdshader
 res://assets/shaders/vitre.gdshader
 res://assets/shaders/Eau plate.gdshader
+res://scene/grabbable.tscn
+res://generalscript/player/first_player.gd
+res://scene/player/third_player.tscn
+res://generalscript/player/third_player.gd
+res://scene/player/third_player_aventure.tscn
+res://generalscript/player/third_player_aventure.gd
+res://main.tscn

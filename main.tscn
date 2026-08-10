@@ -20,6 +20,8 @@
 [ext_resource type="PackedScene" uid="uid://0n72eklaqfc1" path="res://scene/post_process_volume.tscn" id="22_ryguw"]
 [ext_resource type="PackedScene" uid="uid://b1mhddagauywl" path="res://assets/3Dasset/pilier/Pilierdelabasesousmarine.glb" id="23_1u8w0"]
 [ext_resource type="PackedScene" uid="uid://dojtj3hah3ptf" path="res://scene/climb_out_zone.tscn" id="24_0odxb"]
+[ext_resource type="PackedScene" uid="uid://doinqt8whva2j" path="res://scene/Système/ladder_3d.tscn" id="25_0odxb"]
+[ext_resource type="PackedScene" uid="uid://wn3615ddp2s" path="res://scene/grabbable.tscn" id="26_lswn8"]
 [ext_resource type="PackedScene" uid="uid://dw7ef75lw6oa0" path="res://scene/items/scaphandre.tscn" id="27_xuqvo"]
 [ext_resource type="PackedScene" uid="uid://d0od8mnmx3v1" path="res://scene/Système/checkpoint.tscn" id="28_xuqvo"]
 [ext_resource type="PackedScene" uid="uid://244s2c4xqyks" path="res://scene/oxygène.tscn" id="32_jq2sk"]
@@ -68,7 +70,7 @@ script = ExtResource("1_0odxb")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1346764098]
 _spawnable_scenes = PackedStringArray("uid://dvdlhnirv6pa7")
 spawn_path = NodePath("../Players")
-spawn_limit = 2
+spawn_limit = 4
 
 [node name="Players" type="Node3D" parent="." unique_id=1249452715]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.722314, 50.492226, 0.12253147)
@@ -177,11 +179,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.450581e-09, 0, 2.5937219)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 2.5937219)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1988882439]
-transform = Transform3D(19.14769, 0, 0, 0, 1, 0, 0, 0, 19.557905, 0, 55.240562, -10.900382)
+transform = Transform3D(19.14769, 0, 0, 0, 1, 0, 0, 0, 19.557905, 0.014627457, 55.240562, -10.9109125)
 layers = 3
 mesh = SubResource("BoxMesh_lquwl")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=1694198758]
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=1694198758 groups=["mat_metal"]]
 collision_layer = 7
 collision_mask = 7
 
@@ -289,6 +291,12 @@ shape = SubResource("BoxShape3D_lswn8")
 
 [node name="ExitMarker" parent="ClimbOutZone" index="1" unique_id=1055012028]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.969139, -1.8701445)
+
+[node name="ladder_3d" parent="." unique_id=1418565441 instance=ExtResource("25_0odxb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 57.441616, -2.814489)
+
+[node name="Grabbable" parent="." unique_id=340519865 instance=ExtResource("26_lswn8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 56.547222, -4.610199)
 
 [editable path="Door"]
 [editable path="toggle_light"]

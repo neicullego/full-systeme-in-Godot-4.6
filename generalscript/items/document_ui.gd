@@ -15,7 +15,7 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible:
 		return
-	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("use_item"):
+	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("interact"):
 		if not is_open :
 			await get_tree().process_frame
 			close()
