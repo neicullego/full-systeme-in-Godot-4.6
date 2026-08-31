@@ -400,12 +400,12 @@ func update_underwater_ambiance() -> void:
 		var depth_factor = clamp(fog_depth / max_depth, 0.0, 1.0)
 		var fast_factor  := pow(depth_factor, fog_ramp_speed)
 		
-		env.environment.ambient_light_energy = lerp(1.0, 0.0, fast_factor)
-		env.environment.fog_enabled          = true
+		#env.environment.ambient_light_energy = lerp(1.0, 0.0, fast_factor)
+		#env.environment.fog_enabled          = true
 		env.environment.fog_light_color      = water_fog_color
-		env.environment.fog_density          = lerp(0.02, 0.1, fast_factor)
+		#env.environment.fog_density          = lerp(0.02, 0.1, fast_factor)
 		
-		env.environment.volumetric_fog_density = 0.0 
+		#env.environment.volumetric_fog_density = 0.0 
 		env.environment.volumetric_fog_sky_affect = 1.0
 	else:
 		# --- HORS DE L'EAU (OU DANS LE SOUS-MARIN) ---

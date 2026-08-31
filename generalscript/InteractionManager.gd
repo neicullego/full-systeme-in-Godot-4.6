@@ -115,6 +115,10 @@ func _try_interact() -> void:
 		player.start_climb_out(_nearby_climb_zone.get_exit_position())
 		return
 	
+	if inventory.is_equipped_lamp_on():
+		inventory.unequipe_input()
+		return
+	
 	if inventory.equipped_slot and not inventory.equipped_slot.is_empty():
 		if inventory.equipped_slot.item_data.item_type == ItemData.ItemType.LAMP:
 			inventory.toggle_equipped_lamp()

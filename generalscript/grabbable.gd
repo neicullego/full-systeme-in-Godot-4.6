@@ -15,6 +15,10 @@ var _pull_target: Vector3 = Vector3.ZERO
 var _has_pull_target: bool = false
 var _target_basis: Basis
 
+## 🆕 Vrai une fois verrouillé par un PuzzleSocket résolu : plus aucune prise
+## ni mouvement possible, même pour le joueur qui le portait encore.
+var is_locked_in_place: bool = false
+
 
 func _ready() -> void:
 	if not is_in_group("Grabbable"):
@@ -24,14 +28,23 @@ func _ready() -> void:
 	_target_basis = global_transform.basis
 
 
+
 @rpc("any_peer", "call_local", "reliable")
 func rpc_request_grab(peer_id: int) -> void:
+	if is_locked_in_place:   # 🆕 verrouillé : plus aucune prise possible
+		return
 	# Le premier arrivé garde la main — évite que deux joueurs saisissent en même temps
 	if _holder_peer_id != 0 and _holder_peer_id != peer_id:
 		return
 	_holder_peer_id = peer_id
 	_has_pull_target = false
 	_target_basis = global_transform.basis
+	# Pour désactiver le Layer 2
+	set_collision_layer_value(2, false)
+
+	# Pour désactiver le Mask 2
+	set_collision_mask_value(2, false)
+
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -40,6 +53,11 @@ func rpc_release_grab(peer_id: int) -> void:
 		return
 	_holder_peer_id = 0
 	_has_pull_target = false
+	# Pour désactiver le Layer 2
+	set_collision_layer_value(2, true)
+
+	# Pour désactiver le Mask 2
+	set_collision_mask_value(2, true)
 
 
 @rpc("any_peer", "call_local", "reliable")
@@ -57,8 +75,23 @@ func rpc_apply_rotation(peer_id: int, axis: Vector3, angle_delta_rad: float) -> 
 	_target_basis = (Basis(axis.normalized(), angle_delta_rad) * _target_basis).orthonormalized()
 
 
+## 🆕 Verrouille définitivement l'objet en place. Méthode normale (pas un RPC) :
+## appelée depuis PuzzleSocket._rpc_solve(), qui tourne déjà chez tout le monde
+## via call_local — donc cet appel s'exécute identiquement sur chaque pair.
+func lock_in_place() -> void:
+	if is_locked_in_place:
+		return
+	is_locked_in_place = true
+	_holder_peer_id = 0
+	_has_pull_target = false
+	linear_velocity = Vector3.ZERO
+	angular_velocity = Vector3.ZERO
+	freeze = true
+	freeze_mode = RigidBody3D.FREEZE_MODE_STATIC
+
+
 func _physics_process(delta: float) -> void:
-	if not _has_pull_target:
+	if is_locked_in_place or not _has_pull_target:   # 🆕
 		return
 
 	# ── Rappel vers la position cible (bout du spring arm du porteur) ─────────
@@ -72,4 +105,8 @@ func _physics_process(delta: float) -> void:
 	var current_quat: Quaternion = global_transform.basis.get_rotation_quaternion()
 	var target_quat: Quaternion = _target_basis.get_rotation_quaternion()
 	global_transform.basis = Basis(current_quat.slerp(target_quat, rotation_response * delta))
-	angular_velocity = Vector3.ZERO   # on pilote directement l'orientation, pas de couple physique résiduel
+	angular_velocity = Vector3.ZERO
+
+## Vrai si un joueur porte actuellement cet objet (0 = personne).
+func is_held() -> bool:
+	return _holder_peer_id != 0

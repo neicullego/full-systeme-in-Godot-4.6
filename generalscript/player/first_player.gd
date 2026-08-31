@@ -1,5 +1,10 @@
 extends CharacterBody3D
 
+@onready var head_clearance_ray: RayCast3D = $CeilingRay # ← À ajouter dans l'éditeur au-dessus de la tête du joueur
+const CLEARANCE_CHECK_DISTANCE := 0.84                   # Mètres à vérifier au-dessus de la tête
+var is_crouching := false                               # Déclare-le explicitement si tu ne le fais pas déjà
+
+
 # 🆕 BRAS GAUCHE — mêmes mécanismes que le droit, dédié au portage à deux mains
 @onready var left_arm_ik: Node = $Marker3D/PhysicsMan/Armature/Skeleton3D/TwoBoneIK_arme_left
 @onready var hand_left_target: Marker3D = $main_gauche
@@ -308,6 +313,9 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	cam_yaw = camera_pivot.rotation_degrees.y
 	
+	head_clearance_ray.target_position = Vector3.UP * CLEARANCE_CHECK_DISTANCE
+	head_clearance_ray.collision_mask = 1               # ⚠️ Change selon la Layer de tes murs/plafonds
+	
 	
 	health_bar_ui.update(current_health, max_health)
 	
@@ -610,11 +618,25 @@ func _physics_process(delta: float) -> void:
 				velocity.y = JUMP_VELOCITY
 
 		# --- 3. GESTION DES ETATS ET VITESSE ---
-		var is_crouching = Input.is_action_pressed("ui_crouch") and not is_swimming or Input.is_action_pressed("ui_crouch") and wearing_heavy_suit
-		# --- NOUVEAU : GESTION DE LA HAUTEUR DE LA TÊTE ---
+		# ── SYSTÈME DE CROUCH + DÉTECTION PLAFOND ───────────────────────────────
+		var _is_pressing_crouch := Input.is_action_pressed("ui_crouch") and not is_swimming
+		
+		# Détecte le moment EXACT où le joueur relâche le bouton (tentative de relevé)
+		if is_crouching != _is_pressing_crouch:
+			if not _is_pressing_crouch:
+				head_clearance_ray.force_raycast_update()
+				if head_clearance_ray.is_colliding():
+					# Collision détectée → On force le retour à l'accroupi
+					_is_pressing_crouch = true
+
+
+		is_crouching = _is_pressing_crouch
+
+		# --- HAUTEUR DE LA CAMÉRA (ton code original conservé) ---
 		var target_cam_height = cam_original_height
 		if is_crouching:
 			target_cam_height += crouch_cam_offset
+
 	
 		# Interpolation fluide de la position Y
 		camera_pivot.position.y = lerp(camera_pivot.position.y, target_cam_height, cam_lerp_speed * delta)

@@ -1,4 +1,10 @@
+class_name Door
 extends RigidBody3D
+
+# ── SIGNAUX ───────────────────────────────────────────────────────────────────
+## Émis chaque fois que la porte se déverrouille (clé, énigme, etc.) — pratique
+## pour déclencher un son, une animation, etc. depuis un autre script.
+signal door_unlocked
 
 # ── EXPORT ────────────────────────────────────────────────────────────────────
 @export var is_locked: bool = false:
@@ -54,12 +60,20 @@ func rpc_release_grab(peer_id: int) -> void:
 		_pull_target = Vector3.ZERO
 
 
-# ── DÉVERROUILLAGE PAR CLÉ ──────────────────────────────────────────────────
+# ── DÉVERROUILLAGE ────────────────────────────────────────────────────────────
+## Point d'entrée public : à appeler depuis N'IMPORTE QUEL autre objet (énigme,
+## levier, bouton, etc.) pour déverrouiller la porte. Ne fait rien si elle
+## est déjà déverrouillée. Se synchronise automatiquement sur tous les peers.
+func unlock() -> void:
+	if not is_locked:
+		return
+	interact_ok.rpc()
+
 ## Appelée par InteractionManager quand le joueur a la bonne clé en inventaire.
 ## Retourne true si la clé correspond et déclenche le déverrouillage sur tous les peers.
 func try_unlock(key_id: String) -> bool:
 	if door_id.is_empty() or key_id == door_id:
-		interact_ok.rpc()
+		unlock()
 		return true
 	print("[Door] Mauvaise clé : '", key_id, "' — requise : '", door_id, "'")
 	return false
@@ -68,6 +82,7 @@ func try_unlock(key_id: String) -> bool:
 @rpc("any_peer", "call_local", "reliable")
 func interact_ok() -> void:
 	is_locked = false
+	door_unlocked.emit()
 	print("[Door] Déverrouillée !")
 
 

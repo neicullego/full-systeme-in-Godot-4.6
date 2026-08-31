@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://dawvh8gds87m2"]
+
+[ext_resource type="Script" uid="uid://b848naj4528ju" path="res://generalscript/LevelLight.gd" id="1_h6xct"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h6xct"]
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_h6xct"]
+material = SubResource("StandardMaterial3D_h6xct")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_24rbq"]
+
+[node name="light" type="Node3D" unique_id=850305667 node_paths=PackedStringArray("spotlight")]
+script = ExtResource("1_h6xct")
+spotlight = NodePath("SpotLight3D")
+emissive_material = SubResource("StandardMaterial3D_h6xct")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1725607706]
+mesh = SubResource("SphereMesh_h6xct")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=173167485]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=1193688765]
+shape = SubResource("SphereShape3D_24rbq")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="." unique_id=2026310619]

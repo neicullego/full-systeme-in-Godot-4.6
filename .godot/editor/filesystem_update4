@@ -1,4 +1,4 @@
-res://scene/player/first_player.tscn
+res://scene/player/third_player_aventure.tscn
 res://assets/material/vitre.tres
 res://assets/shaders/underwather.gdshader
 res://assets/shaders/bulle_d_air.gdshader
@@ -9,10 +9,12 @@ res://assets/shaders/water_fog.gdshader
 res://assets/shaders/cooldown_interactable.gdshader
 res://assets/shaders/vitre.gdshader
 res://assets/shaders/Eau plate.gdshader
-res://scene/grabbable.tscn
-res://generalscript/player/first_player.gd
-res://scene/player/third_player.tscn
-res://generalscript/player/third_player.gd
-res://scene/player/third_player_aventure.tscn
-res://generalscript/player/third_player_aventure.gd
+res://generalscript/cooldown_interactable.gd
+res://generalscript/door.gd
+res://generalscript/grabbable.gd
+res://generalscript/PuzzleSocket.gd
+res://generalscript/LevelLight.gd
+res://scene/Système/light.tscn
 res://main.tscn
+res://generalscript/water/Water.gd
+res://generalscript/multijoueur/main.gd

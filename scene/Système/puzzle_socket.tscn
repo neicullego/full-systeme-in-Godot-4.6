@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://djl20alvo5ppi"]
+
+[ext_resource type="Script" uid="uid://dh6hb3rswut5h" path="res://generalscript/PuzzleSocket.gd" id="1_3uh7x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_obdp7"]
+
+[node name="PuzzleSocket" type="Node3D" unique_id=820151816]
+
+[node name="Area3D" type="Area3D" parent="." unique_id=1895943716]
+script = ExtResource("1_3uh7x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1954698207]
+shape = SubResource("BoxShape3D_obdp7")

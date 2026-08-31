@@ -1,6 +1,22 @@
 class_name CooldownInteractable
 extends Node3D
 
+@export var door: Door
+@export var cooldown: CooldownInteractable
+
+## 🆕 Lumières à allumer une fois ce cooldown terminé. Glissez-en autant
+## que vous voulez depuis l'Inspecteur.
+@export var lights_to_activate: Array[LevelLight] = []
+
+
+@export var is_locked: bool = false
+
+@onready var sound = $AudioStreamPlayer3D
+
+signal solved
+ 
+var _is_solved: bool = false
+
 # ── Exports ───────────────────────────────────────────────────────────────────
 @export var tool_required_id: String = ""
 @export var single_use: bool = true
@@ -37,6 +53,8 @@ func _ready() -> void:
 # ── API publique ──────────────────────────────────────────────────────────────
 
 func try_interact(tool_id: String) -> bool:
+	if is_locked :
+		return false
 	if single_use and _already_used:
 		print("[CooldownInteractable] '%s' déjà utilisé." % name)
 		return false
@@ -47,8 +65,11 @@ func try_interact(tool_id: String) -> bool:
 
 ## Appelée au début de l'interaction
 func start_interaction() -> void:
-	_set_particles_emitting(true)
+	if is_locked :
+		return
+	rpc("_set_particles_emitting", true)
 	print("[CooldownInteractable] Interaction démarrée sur : ", name)
+	sound.play()
 	
 	# Gestion de l'animation de la jauge de progression
 	if _timer_sprite:
@@ -67,6 +88,7 @@ func start_interaction() -> void:
 @rpc("any_peer", "call_local", "reliable")
 func complete_interaction() -> void:
 	_set_particles_emitting(false)
+	sound.stop()
 	
 	if _tween and _tween.is_valid():
 		_tween.kill()
@@ -75,12 +97,19 @@ func complete_interaction() -> void:
 		
 	if single_use:
 		_already_used = true
+		
+	for light in lights_to_activate:   # 🆕
+		if is_instance_valid(light):
+			light.turn_on()
+	
 	emit_signal("interaction_completed", self)
+	solve()
 	print("[CooldownInteractable] Interaction terminée sur : ", name)
 
 ## Appelée si l'interaction est annulée
 func cancel_interaction() -> void:
-	_set_particles_emitting(false)
+	rpc("_set_particles_emitting", false)
+	sound.stop()
 	
 	if _tween and _tween.is_valid():
 		_tween.kill()
@@ -92,7 +121,6 @@ func cancel_interaction() -> void:
 
 func get_hand_marker() -> Marker3D:
 	return get_node_or_null("marker_node") as Marker3D
-
 # ── Gestion des particules ────────────────────────────────────────────────────
 func _find_particles(node: Node) -> void:
 	for child in node.get_children():
@@ -101,8 +129,28 @@ func _find_particles(node: Node) -> void:
 			child.emitting = false
 		_find_particles(child)
 
+@rpc("any_peer", "call_local", "reliable")
 func _set_particles_emitting(active: bool) -> void:
 	for p in _particles:
 		if is_instance_valid(p):
 			p.emitting = active
 			
+
+@rpc("any_peer", "call_local", "reliable")
+func unlock() -> void:
+	if is_locked == true:
+		is_locked = false
+
+func solve() -> void:
+	if _is_solved:
+		return
+	_is_solved = true
+	print("[Enigme] Résolue !")
+	solved.emit()
+	if door:
+		door.unlock()
+	elif cooldown:
+		cooldown.unlock()
+
+func is_solved() -> bool:
+	return _is_solved

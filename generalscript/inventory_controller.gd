@@ -721,3 +721,14 @@ func drop_input():
 		return
 	
 	_drop_from_hand(slot)
+	
+## Vrai si l'objet actuellement équipé est une lampe torche ET qu'elle est allumée.
+func is_equipped_lamp_on() -> bool:
+	if equipped_slot == null or equipped_slot.is_empty():
+		return false
+	if equipped_slot.item_data.item_type != ItemData.ItemType.LAMP:
+		return false
+	if equipped_instance == null or equipped_instance.get_child_count() == 0:
+		return false
+	var lamp = equipped_instance.get_child(0)
+	return lamp.has_method("toggle_light") and "is_on" in lamp and lamp.is_on

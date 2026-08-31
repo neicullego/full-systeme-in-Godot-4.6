@@ -1,6 +1,6 @@
 extends Node3D
 
-const PlayerScene := preload("res://scene/player/first_player.tscn")
+const PlayerScene := preload("res://scene/player/third_player.tscn")
 
 @onready var players: Node3D = $Players
 # 🆕 On récupère la liste des points de spawn que tu as créés dans l'éditeur

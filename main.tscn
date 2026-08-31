@@ -68,7 +68,7 @@ size = Vector3(1, 5.9434814, 1)
 script = ExtResource("1_0odxb")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1346764098]
-_spawnable_scenes = PackedStringArray("uid://dvdlhnirv6pa7")
+_spawnable_scenes = PackedStringArray("uid://bbjyjggmvtdcj")
 spawn_path = NodePath("../Players")
 spawn_limit = 4
 
@@ -202,6 +202,18 @@ collision_mask = 7
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D4/StaticBody3D" unique_id=1087529145]
 shape = SubResource("ConvexPolygonShape3D_lquwl")
 
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=1178138546]
+transform = Transform3D(1.385127, 0, 0, 0, 1, 0, 0, 0, 1.3191146, 2.4866433, 57.522045, -13.242253)
+layers = 3
+mesh = SubResource("BoxMesh_lquwl")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5" unique_id=457478201]
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D5/StaticBody3D" unique_id=2031968963]
+shape = SubResource("ConvexPolygonShape3D_lquwl")
+
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1241041029]
 transform = Transform3D(1.5738942e-07, 0.4327603, 16.116182, 7.8742005e-08, 1.118211, -6.2371426, -5.2811127, -1.4550506e-08, 3.6652816e-07, 17.35387, 52.013695, -12.19068)
 layers = 3
@@ -256,6 +268,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.36035, 56.277122, -10.1351
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.250472, 57.263695, -7.9904804)
 tool_required_id = "Tournevis"
+single_use = null
+cooldown_duration = null
 
 [node name="PlancheClouee" parent="." unique_id=878546914 instance=ExtResource("20_82xsv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 57.85064, -7.8725286)
