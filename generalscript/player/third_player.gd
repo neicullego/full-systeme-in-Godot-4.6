@@ -1,5 +1,11 @@
 extends CharacterBody3D
 
+@onready var ik_toe_left:  Node = $Marker3D/PhysicsMan/Armature/Skeleton3D/TwoBoneIK_PiedGauche
+@onready var ik_toe_right: Node = $Marker3D/PhysicsMan/Armature/Skeleton3D/TwoBoneIK_PiedDroit
+
+@onready var target_toe_left:  Marker3D = $IKTargetOrteilGauche
+@onready var target_toe_right: Marker3D = $IKTargetOrteilDroit
+
 @onready var head_clearance_ray: RayCast3D = $CeilingRay # ← À ajouter dans l'éditeur au-dessus de la tête du joueur
 const CLEARANCE_CHECK_DISTANCE := 0.84                  # Mètres à vérifier au-dessus de la tête
 var is_crouching := false                               # Déclare-le explicitement si tu ne le fais pas déjà
@@ -109,9 +115,6 @@ var _cooldown_target_node: Node = null   # Référence à l'objet cible (pour v�
 var _cooldown_marker: Marker3D = null    # Marker IK de la cible
 
 
-# Pour lisser la rotation et éviter le snap instantané
-var _smooth_corr_left: Quaternion = Quaternion.IDENTITY
-var _smooth_corr_right: Quaternion = Quaternion.IDENTITY
 
 # Marqueur de l'item en cours de ramassage (comme heldMarker pour les portes)
 var _pickup_marker: Marker3D = null
@@ -155,10 +158,7 @@ var _toe_rotation_left:  Quaternion = Quaternion.IDENTITY
 var _toe_rotation_right: Quaternion = Quaternion.IDENTITY
 
 
-var _deferred_hit_left:      Dictionary = {}
-var _deferred_hit_left_toe:  Dictionary = {}
-var _deferred_hit_right:     Dictionary = {}
-var _deferred_hit_right_toe: Dictionary = {}
+
 
 @onready var anim_tree = $AnimationTree
 @onready var camera_pivot = $CameraPivot 
@@ -311,6 +311,8 @@ func _ready():
 		$InventoryController/CanvasLayer/HealthBar.visible = false
 	carry_spring_arm.add_excluded_object(get_rid())
 	var ray_vector = Vector3(0, -2.5, 0)
+	ik_toe_left.active = true   # _ready() et _rpc_sync_respawn() → true
+	ik_toe_right.active = true  # _rpc_sync_death() → false
 	anim_tree.active = true
 	right_arm_ik.active = true
 	left_arm_ik.active = true
@@ -533,14 +535,8 @@ func _process(delta):
 		# ✅ LA CORRECTION : On coupe obligatoirement l'IK avant de quitter la fonction !
 		ik_left.influence  = 0.0
 		ik_right.influence = 0.0
-		if _foot_l_idx != -1:
-			skeleton.set_bone_global_pose_override(_foot_l_idx, Transform3D(), 0.0, false)
-		if _foot_r_idx != -1:
-			skeleton.set_bone_global_pose_override(_foot_r_idx, Transform3D(), 0.0, false)
-			
-		# On réinitialise aussi les variables de stockage d'orientation
-		_smooth_corr_left  = Quaternion.IDENTITY
-		_smooth_corr_right = Quaternion.IDENTITY
+		ik_toe_left.influence  = 0.0
+		ik_toe_right.influence = 0.0
 		return
 
 	var hit_left      = _get_ground_hit(ray_left)
@@ -559,11 +555,7 @@ func _process(delta):
 	_update_foot_rotations(hit_left, hit_right, hit_left_toe, hit_right_toe, delta)
 
 
-	_deferred_hit_left      = hit_left
-	_deferred_hit_left_toe  = hit_left_toe
-	_deferred_hit_right     = hit_right
-	_deferred_hit_right_toe = hit_right_toe
-	call_deferred("_apply_deferred_foot_tilt", delta)
+	_update_foot_toe_targets(hit_left_toe, hit_right_toe, delta)
 
 	ik_left.influence  = _ik_influence
 	ik_right.influence = _ik_influence
@@ -1046,73 +1038,28 @@ func _compute_ankle_target(hit_heel: Dictionary, hit_toe: Dictionary) -> Vector3
 
 	return ankle_pos
 	
-func _apply_deferred_foot_tilt(delta: float) -> void:
-	# Nous utilisons des variables locales pour forcer le type "int" au linter.
-	var left_index = _foot_l_idx
-	var right_index = _foot_r_idx
-	
-	# Appel 1 pour le pied gauche
-	_tilt_foot_bone(left_index, _deferred_hit_left, _deferred_hit_left_toe, ray_left, ray_left_toe, delta)
-	
-	# Appel 2 pour le pied droit
-	_tilt_foot_bone(right_index, _deferred_hit_right, _deferred_hit_right_toe, ray_right, ray_right_toe, delta)
-
-func _tilt_foot_bone(bone_idx: int, hit_heel: Dictionary, hit_toe: Dictionary, ray_heel: RayCast3D, ray_toe: RayCast3D, delta: float) -> void:
-	if bone_idx == -1 or hit_heel.is_empty():
-		return
-		
-	var is_left = (bone_idx == _foot_l_idx)
-
-	# 🛑 COUPE-CIRCUIT INSTANTANÉ : Si on doit couper, on remet l'os à zéro immédiatement
+func _update_foot_toe_targets(hit_l_toe: Dictionary, hit_r_toe: Dictionary, delta: float) -> void:
 	if _foot_rotation_weight < 0.01 or is_swimming or not _eff_on_floor():
-		skeleton.set_bone_global_pose_override(bone_idx, Transform3D(), 0.0, false)
-		if is_left: _smooth_corr_left = Quaternion.IDENTITY
-		else:       _smooth_corr_right = Quaternion.IDENTITY
+		ik_toe_left.influence  = 0.0
+		ik_toe_right.influence = 0.0
 		return
 
-	if not hit_heel.get("found", false):
-		return
+	# 🆕 Si le raycast ne touche rien (pied au bord du vide, ex: falaise),
+	# on utilise quand même le point de repli de _get_ground_hit() (bas du raycast)
+	# au lieu de laisser le target figé à sa dernière position connue.
+	var goal_l: Vector3 = hit_l_toe["position"]
+	if hit_l_toe["found"]:
+		goal_l += hit_l_toe["normal"] * toe_offset
 
-	var slope_angle := 0.0
+	var goal_r: Vector3 = hit_r_toe["position"]
+	if hit_r_toe["found"]:
+		goal_r += hit_r_toe["normal"] * toe_offset
 
-	# Vérifier si l'orteil touche le sol
-	if hit_toe.get("found", false):
-		var heel_to_toe: Vector3 = ray_toe.global_position - ray_heel.global_position
-		var foot_length_h = max(Vector2(heel_to_toe.x, heel_to_toe.z).length(), 0.01)
-		var delta_y = hit_toe["position"].y - hit_heel["position"].y
+	target_toe_left.global_position  = target_toe_left.global_position.lerp(goal_l, foot_rotation_speed * delta)
+	target_toe_right.global_position = target_toe_right.global_position.lerp(goal_r, foot_rotation_speed * delta)
 
-		slope_angle = atan2(delta_y, foot_length_h)
-		slope_angle = clamp(slope_angle, -deg_to_rad(max_foot_angle_deg), deg_to_rad(max_foot_angle_deg))
-
-		# Calcul de l'inclinaison cible
-		var lateral_axis_world := skeleton.global_transform.basis.x.normalized()
-		var forward_dot := (ray_toe.global_position - ray_heel.global_position).normalized().dot(skeleton.global_transform.basis.z)
-		var sign_correction := 1.0 if forward_dot <= 0.0 else -1.0
-
-		var target_correction := Quaternion(lateral_axis_world, -(slope_angle * sign_correction))
-
-		# 🚫 ENTRÉE DIRECTE : Suppression complète du Slerp progressif
-		var current_correction := target_correction
-		if is_left:
-			_smooth_corr_left = target_correction
-		else:
-			_smooth_corr_right = target_correction
-
-		# --- APPLICATION DE LA CORRECTION FRANCHE ---
-		skeleton.set_bone_global_pose_override(bone_idx, Transform3D(), 0.0, false)
-		var anim_global_pose = skeleton.get_bone_global_pose(bone_idx)
-
-		var new_basis = Basis(current_correction) * anim_global_pose.basis
-		var new_transform = Transform3D(new_basis, anim_global_pose.origin)
-
-		# Application directe avec le poids fixe (1.0) sans valeurs intermédiaires bizarres
-		skeleton.set_bone_global_pose_override(bone_idx, new_transform, _foot_rotation_weight, true)
-	
-	
-
-
-#Systèmes d'interaction du personnage
-
+	ik_toe_left.influence  = _foot_rotation_weight
+	ik_toe_right.influence = _foot_rotation_weight
 
 func InteractWithDoor() -> void:
 	if !isHoldingObject:
@@ -1488,6 +1435,9 @@ func _die() -> void:
 func _rpc_sync_death() -> void:
 	is_dead = true   # 🆕 indispensable pour que les marionnettes arrêtent aussi leur _process/_physics_process
 	await get_tree().process_frame
+	
+	ik_toe_left.active = true   # _ready() et _rpc_sync_respawn() → true
+	ik_toe_right.active = true  # _rpc_sync_death() → false
 
 	right_arm_ik.active = false
 	left_arm_ik.active = false
@@ -1556,6 +1506,9 @@ func _rpc_sync_respawn(respawn_pos: Vector3) -> void:
 	ik_right.active = true
 	lookhead.active = true
 	anim_tree.active = true
+	
+	ik_toe_left.active = true   # _ready() et _rpc_sync_respawn() → true
+	ik_toe_right.active = true  # _rpc_sync_death() → false
 
 	$CollisionShape3D.disabled = false
 	$CrouchCollisionSphere.disabled = true

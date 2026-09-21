@@ -68,7 +68,7 @@ size = Vector3(1, 5.9434814, 1)
 script = ExtResource("1_0odxb")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1346764098]
-_spawnable_scenes = PackedStringArray("uid://bbjyjggmvtdcj")
+_spawnable_scenes = PackedStringArray("uid://wedl8b3akhcr")
 spawn_path = NodePath("../Players")
 spawn_limit = 4
 
