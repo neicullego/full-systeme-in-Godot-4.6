@@ -10,8 +10,16 @@ var environment: Environment
 # Chemin du fichier de sauvegarde
 const SETTINGS_FILE = "user://settings.cfg"
 
+# Résolutions possibles pour l'atlas d'ombres (index du OptionButton -> taille en pixels)
+const SHADOW_SIZES = [1024, 2048, 4096, 8192]
+
+# Lumières directionnelles (soleil) trouvées dans la scène, pour la distance des ombres
+var sun_lights: Array = []
+
 # Variables pour stocker les paramètres actuels
 var current_settings = {
+	"shadow_size": 1,          # 0=1024, 1=2048, 2=4096, 3=8192
+	"shadow_distance": 100.0,  # en mètres
 	"glow": false,
 	"ssil": false,
 	"ssao": false,
@@ -132,6 +140,8 @@ func apply_all_settings():
 	set_mic_enabled(current_settings.mic_enabled, true)
 	set_proximity_chat_volume(current_settings.proximity_chat_volume, true)
 	set_water_render_distance(current_settings.water_render_distance, true)
+	set_shadow_size(current_settings.shadow_size, true)
+	set_shadow_distance(current_settings.shadow_distance, true)
 	
 	# ✅ UNE SEULE écriture ici. Beaucoup plus sain pour le téléphone.
 	save_settings()
@@ -140,6 +150,10 @@ func update_ui_controls():
 	# Attendre une frame pour s'assurer que tous les nœuds UI sont prêts
 	await get_tree().process_frame
 	
+	if has_node("HBoxContainer/Container/video/shadow_size_button"):
+		$HBoxContainer/Container/video/shadow_size_button.selected = current_settings.shadow_size
+	if has_node("HBoxContainer/Container/video/shadow_distance_slider"):
+		$HBoxContainer/Container/video/shadow_distance_slider.value = current_settings.shadow_distance
 
 	if has_node("HBoxContainer/Container/video/glow_button"):
 		$HBoxContainer/Container/video/glow_button.button_pressed = current_settings.glow
@@ -347,6 +361,8 @@ func set_ao_quality(index, is_loading = false):
 # Fonction optionnelle pour réinitialiser aux valeurs par défaut
 func reset_to_defaults():
 	current_settings = {
+		"shadow_size": 1,          # 0=1024, 1=2048, 2=4096, 3=8192
+		"shadow_distance": 100.0,  # en mètres
 		"glow": false,
 		"ssil": false,
 		"ssao": false,
@@ -364,7 +380,8 @@ func reset_to_defaults():
 		"shadows": 3,
 		"ao_quality": 2,
 		"mic_enabled": true,
-"proximity_chat_volume": 1.0,
+		"proximity_chat_volume": 1.0,
+		"water_render_distance": 4
 	}
 	
 	# --- AJOUT ICI ---
@@ -383,19 +400,21 @@ func apply_mobile_overrides():
 	current_settings.ssao = false
 	current_settings.ssr = false
 	current_settings.sdfgi = false
+	current_settings.shadow_size = 0
+	current_settings.shadow_distance = 40.0
 	
 	# Optionnel : baisser la qualité des ombres par défaut sur mobile
 	# current_settings.shadows = 1 # Soft Very Low
 	
 	# 2. On cache les boutons pour empêcher le joueur de les activer
 	if has_node("ssil_button"):
-		$ssil_button.hide()
+		$HBoxContainer/Container/video/ssil_button.hide()
 	if has_node("ssao_button"):
-		$ssao_button.hide()
+		$HBoxContainer/Container/video/ssao_button.hide()
 	if has_node("ssr_button"):
-		$ssr_button.hide()
+		$HBoxContainer/Container/video/ssr_button.hide()
 	if has_node("sdfgi_button"):
-		$sdfgi_button.hide()
+		$HBoxContainer/Container/video/sdfgi_button.hide()
 		
 	print("📱 Mode Mobile détecté : Effets graphiques lourds désactivés et cachés.")
 
@@ -464,3 +483,37 @@ func set_water_render_distance(value, is_loading = false):
 	
 	if not is_loading:
 		save_settings()
+		
+## Résolution des ombres. index : 0=1024, 1=2048, 2=4096, 3=8192
+func set_shadow_size(index, is_loading = false):
+	current_settings.shadow_size = index
+	var i = clampi(index, 0, SHADOW_SIZES.size() - 1)
+	var atlas_size: int = SHADOW_SIZES[i]
+
+	# Soleil (lumière directionnelle)
+	RenderingServer.directional_shadow_atlas_set_size(atlas_size, true)
+	# Lampes omni/spot : plafonné à 4096 (8192 est très lourd en VRAM pour ces lumières)
+	get_viewport().positional_shadow_atlas_size = mini(atlas_size, 4096)
+
+	if not is_loading:
+		save_settings()
+
+
+## Distance maximale d'affichage des ombres du soleil (en mètres).
+func set_shadow_distance(value, is_loading = false):
+	current_settings.shadow_distance = value
+	if sun_lights.is_empty():
+		_refresh_sun_lights()
+	for light in sun_lights:
+		if is_instance_valid(light):
+			light.directional_shadow_max_distance = value
+	if not is_loading:
+		save_settings()
+
+
+## Cherche toutes les DirectionalLight3D de la scène (quel que soit leur nom).
+## À rappeler si ton soleil est créé/remplacé après le chargement du menu.
+func _refresh_sun_lights() -> void:
+	sun_lights.clear()
+	for node in get_tree().root.find_children("*", "DirectionalLight3D", true, false):
+		sun_lights.append(node)

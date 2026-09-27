@@ -1,3 +1,6 @@
+HSlider
+Label
+OptionButton
 LookAtModifier3D
 TwoBoneIK3D
 ModifierBoneTarget3D
@@ -10,5 +13,3 @@ MeshInstance3D
 Area3D
 RayCast3D
 RigidBody3D
-SpringArm3D
-CanvasLayer

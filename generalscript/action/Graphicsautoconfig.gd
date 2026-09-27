@@ -35,6 +35,8 @@ const RECOMMENDED_PRESETS := {
 		"scale_3d": 0.75,
 		"fps_cap": 1,   # 60 fps
 		"vsync": true,
+		"shadow_size": 0,          # 1024
+		"shadow_distance": 50.0,
 	},
 	Tier.MEDIUM: {
 		"glow": true,
@@ -47,6 +49,8 @@ const RECOMMENDED_PRESETS := {
 		"scale_3d": 1.0,
 		"fps_cap": 1,   # 60 fps
 		"vsync": true,
+		"shadow_size": 1,          # 2048
+		"shadow_distance": 100.0,
 	},
 	Tier.HIGH: {
 		"glow": true,
@@ -59,6 +63,8 @@ const RECOMMENDED_PRESETS := {
 		"scale_3d": 1.0,
 		"fps_cap": 2,   # illimité
 		"vsync": true,
+		"shadow_size": 2,          # 4096
+		"shadow_distance": 200.0,
 	},
 }
 

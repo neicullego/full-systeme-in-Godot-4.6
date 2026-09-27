@@ -107,6 +107,24 @@ popup/item_1/id = 1
 popup/item_2/text = "Exclusive Fullscreen"
 popup/item_2/id = 2
 
+[node name="shadow_size" type="Label" parent="HBoxContainer/Container/video" unique_id=468637156]
+layout_mode = 2
+text = "shadow size:"
+
+[node name="shadow_size_button" type="OptionButton" parent="HBoxContainer/Container/video" unique_id=1604829090]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+selected = 0
+item_count = 4
+popup/item_0/text = "Low"
+popup/item_0/id = 0
+popup/item_1/text = "Medium"
+popup/item_1/id = 1
+popup/item_2/text = "Hight"
+popup/item_2/id = 2
+popup/item_3/text = "Ultra"
+popup/item_3/id = 3
+
 [node name="fps" type="Label" parent="HBoxContainer/Container/video" unique_id=1045975134]
 layout_mode = 2
 text = "fps :"
@@ -123,6 +141,17 @@ popup/item_1/text = "60FPS"
 popup/item_1/id = 1
 popup/item_2/text = "Uncapped"
 popup/item_2/id = 2
+
+[node name="shadow_distance" type="Label" parent="HBoxContainer/Container/video" unique_id=1858895136]
+layout_mode = 2
+text = "shadow distance:"
+
+[node name="shadow_distance_slider" type="HSlider" parent="HBoxContainer/Container/video" unique_id=950835433]
+layout_mode = 2
+min_value = 20.0
+max_value = 300.0
+step = 10.0
+value = 100.0
 
 [node name="ao_quality" type="Label" parent="HBoxContainer/Container/video" unique_id=1316975203]
 layout_mode = 2
@@ -324,7 +353,9 @@ text = "Apply"
 [connection signal="value_changed" from="HBoxContainer/Container/video/scaling_slider" to="." method="scale_3d"]
 [connection signal="item_selected" from="HBoxContainer/Container/video/shadow_button" to="." method="set_shadows"]
 [connection signal="item_selected" from="HBoxContainer/Container/video/window_mode" to="." method="set_window_mode"]
+[connection signal="item_selected" from="HBoxContainer/Container/video/shadow_size_button" to="." method="set_shadow_size"]
 [connection signal="item_selected" from="HBoxContainer/Container/video/fps_button" to="." method="set_fps_cap"]
+[connection signal="value_changed" from="HBoxContainer/Container/video/shadow_distance_slider" to="." method="set_shadow_distance"]
 [connection signal="item_selected" from="HBoxContainer/Container/video/ao_quality_button" to="." method="set_ao_quality"]
 [connection signal="toggled" from="HBoxContainer/Container/video/sdfgi_button" to="." method="set_sdfgi"]
 [connection signal="toggled" from="HBoxContainer/Container/video/ssao_button" to="." method="set_ssao"]
