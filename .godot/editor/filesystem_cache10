@@ -1,9 +1,9 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1790500888
+::res://::1790620763
 default_bus_layout.tres::AudioBusLayout::8656665935979294447::1782734926::0::1::::<><><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1785350906::0::1::::<><><>0<>0<><>::
 icon.svg::CompressedTexture2D::2976572228107080030::1774298266::1781516146::1::::<><><>0<>0<>5058e523bae8d5a75b3a96883db55266<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.s3tc.ctex::
-main.tscn::PackedScene::4623193336291977563::1790500806::0::1::::<><><>0<>0<><>::uid://diirtxi7nm4ty::::res://generalscript/multijoueur/main.gd<>uid://chgevti1cjxgd::::res://assets/shaders/new_shader_material.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://c6qjj16iy4ise::::res://generalscript/water/Water.gd<>uid://dxjvulrb0nvue::::res://generalscript/water/buoyancy.gd<>uid://xoadbpg2pw0d::::res://assets/shaders/water_fog.gdshader<>uid://fiw83efmhmlp::::res://scene/door.tscn<>uid://c8oldekfp5qbp::::res://scene/items/KeyPickup.tscn<>uid://5a7ot38wgk32::::res://scene/items/DocumentPickup.tscn<>uid://dqpkdb414btmw::::res://scene/items/PotionPickup.tscn<>uid://dfrks4lqplex8::::res://scene/items/PoisonPickup.tscn<>uid://c5gr0joqp7n1a::::res://scene/items/MarteauPickup.tscn<>uid://b5fta0wiqv31h::::res://scene/world_environment.tscn<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://bttda1kxji0nw::::res://scene/items/TournevisPickup.tscn<>uid://blfp2al5s4tfe::::res://scene/cooldown_interactable.tscn<>uid://d4bo5j37072ge::::res://scene/interactable/PlancheClouee.tscn<>uid://0n72eklaqfc1::::res://scene/post_process_volume.tscn<>uid://b1mhddagauywl::::res://assets/3Dasset/pilier/Pilierdelabasesousmarine.glb<>uid://dojtj3hah3ptf::::res://scene/climb_out_zone.tscn<>uid://doinqt8whva2j::::res://scene/Système/ladder_3d.tscn<>uid://wn3615ddp2s::::res://scene/grabbable.tscn<>uid://dw7ef75lw6oa0::::res://scene/items/scaphandre.tscn<>uid://d0od8mnmx3v1::::res://scene/Système/checkpoint.tscn<>uid://244s2c4xqyks::::res://scene/oxygène.tscn<>uid://doou178ny1f4w::::res://scene/items/lamp.tscn
+main.tscn::PackedScene::4623193336291977563::1790620640::0::1::::<><><>0<>0<><>::uid://diirtxi7nm4ty::::res://generalscript/multijoueur/main.gd<>uid://chgevti1cjxgd::::res://assets/shaders/new_shader_material.tres<>uid://3c7tin5jph1m::::res://assets/shaders/Underwater.tres<>uid://c6qjj16iy4ise::::res://generalscript/water/Water.gd<>uid://dxjvulrb0nvue::::res://generalscript/water/buoyancy.gd<>uid://xoadbpg2pw0d::::res://assets/shaders/water_fog.gdshader<>uid://fiw83efmhmlp::::res://scene/door.tscn<>uid://c8oldekfp5qbp::::res://scene/items/KeyPickup.tscn<>uid://5a7ot38wgk32::::res://scene/items/DocumentPickup.tscn<>uid://dqpkdb414btmw::::res://scene/items/PotionPickup.tscn<>uid://dfrks4lqplex8::::res://scene/items/PoisonPickup.tscn<>uid://c5gr0joqp7n1a::::res://scene/items/MarteauPickup.tscn<>uid://b5fta0wiqv31h::::res://scene/world_environment.tscn<>uid://byhi1rmxnkx0y::::res://assets/material/vitre.tres<>uid://bttda1kxji0nw::::res://scene/items/TournevisPickup.tscn<>uid://blfp2al5s4tfe::::res://scene/cooldown_interactable.tscn<>uid://d4bo5j37072ge::::res://scene/interactable/PlancheClouee.tscn<>uid://0n72eklaqfc1::::res://scene/post_process_volume.tscn<>uid://b1mhddagauywl::::res://assets/3Dasset/pilier/Pilierdelabasesousmarine.glb<>uid://dojtj3hah3ptf::::res://scene/climb_out_zone.tscn<>uid://doinqt8whva2j::::res://scene/Système/ladder_3d.tscn<>uid://wn3615ddp2s::::res://scene/grabbable.tscn<>uid://dw7ef75lw6oa0::::res://scene/items/scaphandre.tscn<>uid://d0od8mnmx3v1::::res://scene/Système/checkpoint.tscn<>uid://244s2c4xqyks::::res://scene/oxygène.tscn<>uid://doou178ny1f4w::::res://scene/items/lamp.tscn
 README.md::TextFile::-1::1783674162::0::1::::<><><>0<>0<><>::
 steam_appid.txt::TextFile::-1::1781861188::0::1::::<><><>0<>0<><>::
 ::res://addons/::1785350829
@@ -28,7 +28,7 @@ updates.gd::GDScript::4450020931874397632::1781861122::0::1::::<>MarginContainer
 ::res://addons/godotsteam/linuxarm64/::1785350830
 ::res://addons/godotsteam/osx/::1785350830
 ::res://addons/godotsteam/win32/::1785350830
-::res://addons/godotsteam/win64/::1790500883
+::res://addons/godotsteam/win64/::1790620758
 ::res://assets/::1785350831
 ::res://assets/3Dasset/::1785350831
 ::res://assets/3Dasset/Bouteille_d'oxygène/::1785350830
@@ -69,22 +69,22 @@ Inspiration.wav::AudioStreamWAV::5622585896642754676::1783020540::1783020540::1:
 metal_walk.wav::AudioStreamWAV::8412659260022101408::1783015116::1783015116::1::::<><><>0<>0<>1d87545b3d26a2d38db65e2ae9bf6449<>res://.godot/imported/metal_walk.wav-a5b9ad10fafd651544b55220e6c3c710.sample::
 noyade.wav::AudioStreamWAV::2506822011637354708::1782734716::1782734716::1::::<><><>0<>0<>bd3f9bfd97bb727d6ed58b9fb68ec36f<>res://.godot/imported/noyade.wav-807cdd703f6c63ec553f962a6b84d11a.sample::
 Underwater métallique Sound ambiance.wav::AudioStreamWAV::3858512601959669538::1782734716::1782734716::1::::<><><>0<>0<>4531482700949fae4f73fa26f53e9b9b<>res://.godot/imported/Underwater métallique Sound ambiance.wav-90ffab4b18751e18b6bead9b69e76d9b.sample::
-::res://assets/material/::1790500806
+::res://assets/material/::1790620560
 light.tres::StandardMaterial3D::1250701872041015544::1783170576::0::1::::<><><>0<>0<><>::uid://cyl26rfxtdmeo::::res://assets/3Dasset/Rétro_light/Rétro_light_light.png
-vitre.tres::ShaderMaterial::4085936654365368774::1790500806::0::1::::<><><>0<>0<><>::
-::res://assets/shaders/::1790500806
-bulle_d_air.gdshader::Shader::3736220660924197787::1790500806::0::1::::<><><>0<>0<><>::
-cooldown_interactable.gdshader::Shader::2145586217326011219::1790500806::0::1::::<><><>0<>0<><>::
-damage_shader.gdshader::Shader::3636162463045714159::1790500806::0::1::::<><><>0<>0<><>::
+vitre.tres::ShaderMaterial::4085936654365368774::1790620560::0::1::::<><><>0<>0<><>::
+::res://assets/shaders/::1790620626
+bulle_d_air.gdshader::Shader::3736220660924197787::1790620560::0::1::::<><><>0<>0<><>::
+cooldown_interactable.gdshader::Shader::2145586217326011219::1790620560::0::1::::<><><>0<>0<><>::
+damage_shader.gdshader::Shader::3636162463045714159::1790620560::0::1::::<><><>0<>0<><>::
 DepthBuffer.gdshader::Shader::8148856280626872235::1779623490::0::1::::<><><>0<>0<><>::
-Eau plate.gdshader::Shader::4509248524459197961::1790500806::0::1::::<><><>0<>0<><>::
+Eau plate.gdshader::Shader::4509248524459197961::1790620560::0::1::::<><><>0<>0<><>::
 Eau plate.tres::ShaderMaterial::28912213089547269::1783539304::0::1::::<><><>0<>0<><>::uid://b5ikwubeeeuer::::res://assets/shaders/Eau plate.gdshader
-new_shader_material.tres::ShaderMaterial::5276830920506318419::1790500806::0::1::::<><><>0<>0<><>::uid://buldyiaqsc4tr::::res://assets/shaders/water.gdshader
+new_shader_material.tres::ShaderMaterial::5276830920506318419::1790620626::0::1::::<><><>0<>0<><>::uid://buldyiaqsc4tr::::res://assets/shaders/water.gdshader
 Underwater.tres::ShaderMaterial::1971393692870693028::1783532146::0::1::::<><><>0<>0<><>::uid://blqyc6f825v2h::::res://assets/shaders/underwather.gdshader
-underwather.gdshader::Shader::3192990424675149553::1790500806::0::1::::<><><>0<>0<><>::
-vitre.gdshader::Shader::6418936090427386597::1790500806::0::1::::<><><>0<>0<><>::
-water.gdshader::Shader::3813131142718357947::1790500806::0::1::::<><><>0<>0<><>::
-water_fog.gdshader::Shader::1643250125618022229::1790500806::0::1::::<><><>0<>0<><>::
+underwather.gdshader::Shader::3192990424675149553::1790620560::0::1::::<><><>0<>0<><>::
+vitre.gdshader::Shader::6418936090427386597::1790620560::0::1::::<><><>0<>0<><>::
+water.gdshader::Shader::3813131142718357947::1790620560::0::1::::<><><>0<>0<><>::
+water_fog.gdshader::Shader::1643250125618022229::1790620560::0::1::::<><><>0<>0<><>::
 ::res://assets/texture/::1785350831
 clique.png::CompressedTexture2D::3172443370173607859::1781015900::1781015902::1::::<><><>0<>0<>31f06c34e26dcfc1f856f21271efb9aa<>res://.godot/imported/clique.png-b9784ea83a19fb0cba998d03c73c709f.s3tc.ctex::
 key_en_leton.png::CompressedTexture2D::1234494213754715358::1777551222::1777551280::1::::<><><>0<>0<>054813ce1bee5eb36cce6c30d89faa6c<>res://.godot/imported/key_en_leton.png-70b4a179a2b95a2f4a6ad1c21a81a6c9.ctex::
@@ -103,8 +103,7 @@ Tournevis.tres::Resource/ItemData::2960603676465360896::1782844902::0::1::::<><>
 ::res://data/skin/::1785350831
 John.tres::Resource/SkinData::7138959864605887658::1783621358::0::1::::<><><>0<>0<><>::uid://b0pynjcyrs0u0::::res://generalscript/skin_data.gd<>uid://b5o8fp8v86c6p::::res://textures/skin/Capture d'écran 2026-07-09 202053.png
 Marinette.tres::Resource/SkinData::4538819568202070798::1783686218::0::1::::<><><>0<>0<><>::uid://dk4l2a7lhhmkm::::res://textures/skin/Capture d'écran 2026-07-10 142301.png<>uid://b0pynjcyrs0u0::::res://generalscript/skin_data.gd
-::res://export/::1785350908
-steam_appid.txt::TextFile::-1::1782155190::0::1::::<><><>0<>0<><>::
+::res://export/::1790620298
 ::res://generalscript/::1788205223
 bulle_d_air.gd::GDScript::8784255869121007822::1779784092::0::1::::<>GPUParticles3D<><>0<>0<><>::
 checkpoint.gd::GDScript::2117895618944156448::1782462142::0::1::::Checkpoint<>Area3D<><>0<>0<><>::
@@ -156,9 +155,9 @@ pause.gd::GDScript::7966072244370099062::1782739388::0::1::::<>Control<><>0<>0<>
 settings.gd::GDScript::5270636303769039775::1790195788::0::1::::<>CanvasLayer<><>0<>0<><>::
 skin_button.gd::GDScript::1688816104280331248::1782403152::0::1::::<>Button<><>0<>0<><>::
 skin_selector.gd::GDScript::2624691495184909068::1782401764::0::1::::SkinSelector<>Control<><>0<>0<><>::
-::res://generalscript/water/::1788205437
+::res://generalscript/water/::1790620560
 buoyancy.gd::GDScript::8793496231364686040::1783685928::0::1::::<>RigidBody3D<><>0<>0<><>::
-Water.gd::GDScript::6982289503202950448::1788205437::0::1::::<>Node3D<><>0<>0<><>::
+Water.gd::GDScript::6982289503202950448::1790620560::0::1::::<>Node3D<><>0<>1<><>::
 ::res://occlusions/::1783532284
 ::res://scene/::1786355623
 bulle_d_aire.tscn::PackedScene::1948020075018855809::1779901980::0::1::::<><><>0<>0<><>::uid://bth4ajy2uw1kp::::res://assets/shaders/bulle_d_air.gdshader<>uid://dxffn7333srji::::res://generalscript/bulle_d_air.gd

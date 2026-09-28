@@ -36,8 +36,8 @@ subdivide_depth = 256
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w48qg"]
 shader = ExtResource("4_dg77c")
-shader_parameter/surface_y = 0.0
-shader_parameter/max_depth = 30.0
+shader_parameter/surface_y = 52.128746
+shader_parameter/max_depth = 8.0
 shader_parameter/max_density = 0.23
 shader_parameter/fog_curve = 1.5
 shader_parameter/fog_color = Color(0, 0.1, 0.2, 1)
@@ -102,7 +102,7 @@ max_depth = 8.0
 fog_ramp_speed = 1.0
 
 [node name="FogVolume" type="FogVolume" parent="Water" unique_id=562800277]
-transform = Transform3D(999.9998, 0, 0, 0, 999.9998, 0, 0, 0, 999.9998, 0, -3570.9482, 0)
+transform = Transform3D(999.9964, 0, 0, 0, 999.9964, 0, 0, 0, 999.9964, 7.227122, -0.5022087, -17.007374)
 material = SubResource("ShaderMaterial_w48qg")
 
 [node name="Door" parent="." unique_id=897376747 instance=ExtResource("6_7mycd")]

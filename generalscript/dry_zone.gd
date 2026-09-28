@@ -1,3 +1,4 @@
+@tool
 extends Area3D
 
 @export var water_node: Node3D
