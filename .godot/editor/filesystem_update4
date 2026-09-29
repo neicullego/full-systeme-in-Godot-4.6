@@ -10,5 +10,3 @@ res://assets/shaders/cooldown_interactable.gdshader
 res://assets/shaders/vitre.gdshader
 res://assets/shaders/Eau plate.gdshader
 res://generalscript/water/Water.gd
-res://scene/post_process_volume.tscn
-res://generalscript/dry_zone.gd

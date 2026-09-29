@@ -385,7 +385,11 @@ func update_underwater_ambiance() -> void:
 
 func _get_active_camera() -> Camera3D:
 	if Engine.is_editor_hint():
-		var viewport_3d := EditorInterface.get_editor_viewport_3d(0)
-		return viewport_3d.get_camera_3d() if viewport_3d else null
+		# On vérifie et récupère le singleton via une chaîne de caractères
+		if Engine.has_singleton("EditorInterface"):
+			var editor_interface = Engine.get_singleton("EditorInterface")
+			var viewport_3d = editor_interface.get_editor_viewport_3d(0)
+			return viewport_3d.get_camera_3d() if viewport_3d else null
+		return null
 	else:
 		return get_viewport().get_camera_3d()
