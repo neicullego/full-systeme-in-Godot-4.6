@@ -3,7 +3,7 @@ shader_type spatial;
 // 'cull_disabled' permet de voir le mesh des deux côtés
 render_mode depth_draw_always, cull_disabled;
 
-// ── MODIFICATION : Gestion de plusieurs zones sèches (Maximum 8) ──
+// ── MODIFICATION : Gestion de plusieurs zones sèches (Maximum 10) ──
 uniform int dry_types[10];
 uniform int dry_zone_count = 0;
 uniform mat4 dry_matrices[10];
@@ -40,16 +40,19 @@ varying vec3 world_pos;
 uniform float edge_scale = 0.1;
 uniform vec3 edge_color : source_color;
 
-// ── NOUVEAUX PARAMÈTRES : EFFET LUMINEUX DES CRÊTES (DESSUS VAGUES) ──
+// ── PARAMÈTRES : EFFET LUMINEUX DES CRÊTES ──
 uniform vec3 crest_color : source_color = vec3(0.4, 0.85, 1.0);
-uniform float crest_threshold : hint_range(0.0, 1.0) = 0.55; // À partir d'où la vague s'illumine
-uniform float crest_intensity : hint_range(0.0, 5.0) = 1.8;   // Force de la luminosité
+uniform float crest_threshold : hint_range(0.0, 1.0) = 0.55;
+uniform float crest_intensity : hint_range(0.0, 5.0) = 1.8;
 
-// ── NOUVEAUX PARAMÈTRES : TRANSPARENCE SOUS L'EAU ──
-uniform float underwater_transparency : hint_range(0.0, 1.0) = 0.25; // Transparence quand on regarde vers le haut
+// ── PARAMÈTRES : TRANSPARENCE SOUS L'EAU ──
+uniform float underwater_transparency : hint_range(0.0, 1.0) = 0.25;
 
-float fresnel(float amount, vec3 normal, vec3 view) {
-	return pow((1.0 - clamp(dot(normalize(normal), normalize(view)), 0.0, 1.0 )), amount);
+// OPTIMISATION : Remplacement de pow() par des multiplications (beaucoup plus rapide)
+float fresnel5(vec3 normal, vec3 view) {
+	float f = 1.0 - clamp(dot(normalize(normal), normalize(view)), 0.0, 1.0);
+	float f2 = f * f;
+	return f2 * f2 * f; // Équivaut à pow(f, 5.0) en beaucoup plus léger
 }
 
 void vertex() {
@@ -63,114 +66,89 @@ void vertex() {
 }
 
 void fragment() {
-	// --- 1. CALCUL DE LA PROFONDEUR SÉCURISÉ ---
-	float depth_raw = texture(DEPTH_TEXTURE, SCREEN_UV).r;
+	// ── OPTIMISATION 1 : DÉCOUPE DES ZONES SÈCHES MULTIPLES ──
+	// Placé en TOUT PREMIER pour annuler les calculs lourds si le pixel est vide (Early Discard)
+	for (int i = 0; i < dry_zone_count; i++) {
+		vec3 extents = dry_sizes[i];
+		
+		if (extents.x > 0.0) { // Sécurité minimale
+			vec3 local_pos = (dry_matrices[i] * vec4(world_pos, 1.0)).xyz;
+			int z_type = dry_types[i];
+			
+			if (z_type == 0) {
+				// BOÎTE : abs() vectoriel et vérification simultanée
+				vec3 abs_p = abs(local_pos);
+				if (abs_p.x < extents.x && abs_p.y < extents.y && abs_p.z < extents.z) {
+					discard;
+				}
+			} 
+			else {
+				// SPHÈRE & CYLINDRE : Utilisation de dot() plus rapide que les + de divisions isolées
+				vec3 norm_p = local_pos / extents; 
+				
+				if (z_type == 1) {
+					if (dot(norm_p, norm_p) < 1.0) discard;
+				} 
+				else if (z_type == 2) {
+					// swizzle .xz pour isoler la base du cylindre
+					if (dot(norm_p.xz, norm_p.xz) < 1.0 && abs(local_pos.y) < extents.y) discard;
+				}
+			}
+		}
+	}
 	
-	// En Godot 4 (Vulkan), le fond vide du ciel renvoie une valeur proche de 0.0 (Reversed-Z)
+	// Si le pixel a survécu au discard, on fait les calculs lourds...
+
+	// --- 1. CALCUL DE LA PROFONDEUR ---
+	float depth_raw = texture(DEPTH_TEXTURE, SCREEN_UV).r;
 	bool is_sky = depth_raw < 0.00001;
 	
 	float depth_lin = PROJECTION_MATRIX[3][2] / (depth_raw + PROJECTION_MATRIX[2][2]);
-	float depth = depth_lin + VERTEX.z;
+	float depth = is_sky ? 50.0 : depth_lin + VERTEX.z; // Regroupé sur une ligne
 
-	// Si on fait face au ciel, on simule une profondeur maximale constante 
-	// pour éviter un saut de valeur brutal qui briserait le dégradé
-	if (is_sky) {
-		depth = 50.0;
-	}
-
-	// Effet Beer's Law (opacité selon la profondeur)
 	float depth_blend = exp((depth + depth_offset) * -beers_law);
 	depth_blend = clamp(1.0 - depth_blend, 0.0, 1.0);
 
-	// --- 2. COULEURS DE BASE & RÉFRACTION ---
+	// --- 2. COULEURS & RÉFRACTION ---
 	vec3 screen_color = textureLod(SCREEN_TEXTURE, SCREEN_UV, depth_blend * 2.5).rgb;
 	vec3 depth_color = mix(color_shallow.rgb, color_deep.rgb, depth_blend);
-	
-	// FIX ANTI-BLEEDING : On estompe totalement la screen_color (le ciel) 
-	// à mesure que l'eau devient profonde pour ne garder que la couleur de l'océan
 	vec3 water_color = mix(screen_color, depth_color, depth_blend);
 
 	// --- 3. NORMALES ET VAGUES ---
 	vec2 time1 = (TIME * wave_direction) * time_scale;
 	vec2 time2 = (TIME * wave_2_direction) * time_scale;
-	vec3 normal_blend = mix(texture(texture_normal, world_pos.xz / noise_scale + time1).rgb, 
-						   texture(texture_normal2, world_pos.xz / noise_scale + time2).rgb, 0.5);
+	vec3 normal_blend = mix(
+		texture(texture_normal, world_pos.xz / noise_scale + time1).rgb, 
+		texture(texture_normal2, world_pos.xz / noise_scale + time2).rgb, 
+		0.5
+	);
 
-	// --- 4. CALCUL DE L'EFFET LUMINEUX DES CRÊTES ---
+	// --- 4. CALCUL DE L'EFFET LUMINEUX ---
 	float micro_noise = normal_blend.r * 0.08;
 	float crest_factor = clamp((height + micro_noise - crest_threshold) / (1.0 - crest_threshold), 0.0, 1.0);
-	crest_factor = pow(crest_factor, 2.0); 
+	crest_factor = crest_factor * crest_factor; // OPTIMISATION : Remplace pow(x, 2.0)
 	vec3 crest_glow = crest_color * crest_factor * crest_intensity;
 
-	// --- 5. LOGIQUE DES COULEURS DE SURFACE (RÉFLEXION) ---
+	// --- 5. LOGIQUE DES FACES (REGROUPÉE) ---
 	vec3 face_normal = FRONT_FACING ? NORMAL : -NORMAL;
-	float fresnel_val = fresnel(5.0, face_normal, VIEW);
+	float fresnel_val = fresnel5(face_normal, VIEW);
 	
-	vec3 reflection_color;
-	if (FRONT_FACING) {
-		reflection_color = mix(albedo, albedo2, fresnel_val);
-	} else {
-		reflection_color = mix(albedo2 * 0.2, edge_color * 0.5, fresnel_val);
-	}
-	
-	// --- 6. ÉCUME (DÉSACTIVÉE SUR L'HORIZON) ---
+	vec3 reflection_color = FRONT_FACING 
+		? mix(albedo, albedo2, fresnel_val) 
+		: mix(albedo2 * 0.2, edge_color * 0.5, fresnel_val);
+
+	// --- 6. ÉCUME ET MÉLANGE ---
 	float foam_factor = is_sky ? 1.0 : smoothstep(0.0, edge_scale, depth);
 	vec3 refraction_color = mix(edge_color, water_color, foam_factor);
-
-	// --- 7. ASSEMBLAGE FINAL (MÉLANGE STRICT AU LIEU D'ADDITION) ---
 	vec3 combined_color = mix(refraction_color, reflection_color, fresnel_val);
 	
-	if (FRONT_FACING) {
-		ALBEDO = clamp(combined_color + crest_glow, vec3(0.0), vec3(1.0));
-	} else {
-		ALBEDO = clamp(combined_color + (crest_glow * 1.5), vec3(0.0), vec3(1.0));
-	}
+	// --- 7. APPLICATION DES VALEURS FINALES ---
+	vec3 final_crest = FRONT_FACING ? crest_glow : crest_glow * 1.5;
+	ALBEDO = clamp(combined_color + final_crest, vec3(0.0), vec3(1.0));
 	
-	// --- 8. GESTION DE LA TRANSPARENCE ---
-	if (FRONT_FACING) {
-		ALPHA = mix(0.5, 1.0, depth_blend);
-	} else {
-		ALPHA = mix(underwater_transparency, 0.92, fresnel_val);
-	}
-	
-	// ── MODIFICATION : DÉCOUPE DES ZONES SÈCHES MULTIPLES ──
-for (int i = 0; i < dry_zone_count; i++) {
-		vec3 extents = dry_sizes[i];
-		if (extents.x > 0.0 && extents.y > 0.0 && extents.z > 0.0) {
-			// On convertit la position de ce pixel du monde vers l'espace local de la zone actuelle
-			vec3 local_pos = (dry_matrices[i] * vec4(world_pos, 1.0)).xyz;
-			
-			// On récupère le type de la zone (0 = Box, 1 = Sphere, 2 = Cylinder)
-			int z_type = dry_types[i];
-			
-			if (z_type == 0) {
-				// ─── 1. CAS DE LA BOÎTE (CUBIQUE) ───
-				if (abs(local_pos.x) < extents.x &&
-					abs(local_pos.y) < extents.y &&
-					abs(local_pos.z) < extents.z) {
-					discard; // On troue l'eau en carré !
-				}
-			} 
-			else if (z_type == 1) {
-				// ─── 2. CAS DE LA SPHÈRE / ELLIPSOÏDE ───
-				float dx = local_pos.x / extents.x;
-				float dy = local_pos.y / extents.y;
-				float dz = local_pos.z / extents.z;
-				if ((dx*dx + dy*dy + dz*dz) < 1.0) {
-					discard; // On troue l'eau en rond !
-				}
-			} 
-			else if (z_type == 2) {
-				// ─── 3. CAS DU CYLINDRE (Aligné sur l'axe vertical Y) ───
-				float dx = local_pos.x / extents.x;
-				float dz = local_pos.z / extents.z;
-				// Rayon circulaire sur XZ + Hauteur délimitée sur Y
-				if ((dx*dx + dz*dz) < 1.0 && abs(local_pos.y) < extents.y) {
-					discard; // On troue l'eau en cylindre !
-				}
-			}
-		}
-	}
+	ALPHA = FRONT_FACING 
+		? mix(0.5, 1.0, depth_blend) 
+		: mix(underwater_transparency, 0.92, fresnel_val);
 	
 	METALLIC = metallic;
 	ROUGHNESS = roughness;

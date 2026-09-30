@@ -2,7 +2,7 @@
 
 [sub_resource type="Shader" id="Shader_ycdy4"]
 code = "// NOTE: Shader automatically converted from Godot Engine 4.6.stable's StandardMaterial3D.
-// MODIFIÉ POUR INCLURE LE VRAI CALCUL DES VAGUES EN 3D
+// MODIFIÉ ET OPTIMISÉ POUR INCLURE LE CALCUL DES VAGUES EN 3D
 
 shader_type spatial;
 render_mode blend_mul, depth_draw_always, cull_back, diffuse_burley, specular_schlick_ggx;
@@ -45,27 +45,32 @@ uniform float noise_scale = 10.0;
 uniform float height_scale = 0.15;
 uniform float wave_speed = 2.0;
 
+// --- VARYINGS (Variables transmises du Vertex au Fragment) ---
+varying float v_world_y;
+varying vec2 v_wave_uv1;
+varying vec2 v_wave_uv2;
+
 void vertex() {
 	UV = UV * uv1_scale.xy + uv1_offset.xy;
+	
+	// OPTIMISATION : Calcul de la position mondiale et des UVs de vague ici (calculé par sommet)
+	vec3 world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	v_world_y = world_pos.y;
+	
+	v_wave_uv1 = world_pos.xz / noise_scale + wave_time * wave_speed;
+	v_wave_uv2 = world_pos.xz / (noise_scale * 0.4) + wave_time * (wave_speed * 1.5);
 }
 
 void fragment() {
-	vec2 base_uv = UV;
-
-	vec4 albedo_tex = texture(texture_albedo, base_uv);
+	vec4 albedo_tex = texture(texture_albedo, UV);
 	ALBEDO = albedo.rgb * albedo_tex.rgb;
 
-	float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
-	METALLIC = metallic_tex * metallic;
+	METALLIC = dot(texture(texture_metallic, UV), metallic_texture_channel) * metallic;
 	SPECULAR = specular;
-
-	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
-	float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);
-	ROUGHNESS = roughness_tex * roughness;
+	ROUGHNESS = dot(texture(texture_roughness, UV), vec4(1.0, 0.0, 0.0, 0.0)) * roughness;
 
 	// --- 1. Calcul de la Réfraction du Verre ---
-	vec3 ref_normal = NORMAL;
-	vec2 ref_ofs = SCREEN_UV - ref_normal.xy * dot(texture(texture_refraction, base_uv), refraction_texture_channel) * refraction;
+	vec2 ref_ofs = SCREEN_UV - NORMAL.xy * dot(texture(texture_refraction, UV), refraction_texture_channel) * refraction;
 	float ref_amount = 1.0 - albedo.a * albedo_tex.a;
 
 	float refraction_depth_tex = textureLod(depth_texture, ref_ofs, 0.0).r;
@@ -77,37 +82,27 @@ void fragment() {
 	vec2 final_screen_uv = mix(SCREEN_UV, ref_ofs, smoothstep(0.0, 1.0, VERTEX.z - refraction_view_pos.z));
 	vec3 background_scene = textureLod(screen_texture, final_screen_uv, ROUGHNESS * 8.0).rgb;
 
-	// --- 2. LOGIQUE UNDERWATER (Basée sur la vraie position 3D des vagues) ---
-	vec3 world_pos = (INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	// --- 2. LOGIQUE UNDERWATER ---
+	// Utilisation des varyings calculés dans le Vertex Shader (très rapide)
+	float h1 = texture(wave, v_wave_uv1).r;
+	float h2 = texture(wave, v_wave_uv2).r;
 	
-	// Calcul de la hauteur de la vague sur ce pixel précis de la vitre
-	float h1 = texture(wave, world_pos.xz / noise_scale + wave_time * wave_speed).r;
-	float h2 = texture(wave, world_pos.xz / (noise_scale * 0.4) + wave_time * (wave_speed * 1.5)).r;
 	float wave_h = (h1 * 0.7) + (h2 * 0.3);
-	float exact_water_y = water_base_y + (wave_h * height_scale);
-
-	// Distance entre le pixel de la vitre et la surface de l'eau
-	float depth_below_water = exact_water_y - world_pos.y;
+	float depth_below_water = (water_base_y + (wave_h * height_scale)) - v_world_y;
 	
-	// 1.0 si on regarde sous l'eau, 0.0 si on regarde en l'air
+	// Masques
 	float blend_water = smoothstep(-0.02, 0.02, depth_below_water);
-
-	// Ligne d'écume (Ménisque) calculée sur la distance à la surface
-	float distance_to_surface = abs(depth_below_water);
-	float spline_mask = 1.0 - smoothstep(0.0, 0.03, distance_to_surface);
+	float spline_mask = 1.0 - smoothstep(0.0, 0.03, abs(depth_below_water));
 
 	// --- 3. Appliquer les effets visuels ---
-	vec3 underwater_scene = background_scene;
-	// Absorption physique (plus le pixel de la vitre est bas, plus c'est sombre)
 	float depth_factor = exp(-max(0.0, depth_below_water) * light_absorption_strength);
-	underwater_scene *= depth_factor; 
-	underwater_scene = mix(underwater_scene, water_color.rgb, water_color.a); 
+	vec3 underwater_scene = mix(background_scene * depth_factor, water_color.rgb, water_color.a); 
 
 	// Mix Final : Air vs Eau + Ménisque
 	vec3 final_scene = mix(background_scene, underwater_scene, blend_water);
 	final_scene = mix(final_scene, meniscus_color, spline_mask * meniscus_opacity);
 
-	// --- 4. Rendu Final (Ton code multiplicateur) ---
+	// --- 4. Rendu Final ---
 	EMISSION += final_scene * ref_amount * EXPOSURE;
 	ALBEDO *= 1.0 - ref_amount;
 	ALPHA = 1.0;

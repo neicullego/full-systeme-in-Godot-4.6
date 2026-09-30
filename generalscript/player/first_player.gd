@@ -454,28 +454,32 @@ func _try_inspect_equipped_item() -> void:
 
 
 func _is_in_dry_zone(pos: Vector3) -> bool:
-	if water and "active_dry_zones" in water:
-		for zone in water.active_dry_zones:
-			if "box_half_size" in zone and zone.box_half_size != Vector3.ZERO:
-				var local_pt: Vector3 = zone.global_transform.inverse() * pos
-				var z_type = zone.zone_type if "zone_type" in zone else 0
-				
-				if z_type == 0: # ─── BOX ───
-					if abs(local_pt.x) < zone.box_half_size.x and \
-					   abs(local_pt.y) < zone.box_half_size.y and \
-					   abs(local_pt.z) < zone.box_half_size.z:
-						return true
-				elif z_type == 1: # ─── SPHERE ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dy = local_pt.y / zone.box_half_size.y
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dy*dy + dz*dz) < 1.0:
-						return true
-				elif z_type == 2: # ─── CYLINDER (Axe Y) ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
-						return true
+	if not water or not "active_dry_zones" in water:
+		return false
+		
+	for zone in water.active_dry_zones:
+		# On utilise la matrice précalculée au lieu de la recalculer !
+		var local_pt: Vector3 = zone.zone_inverse_transform * pos
+		var z_type: int = zone.zone_type
+		
+		# On a retiré les vérifications par chaîne de caractères. Accès direct !
+		if z_type == 0: # ─── BOX ───
+			if abs(local_pt.x) < zone.box_half_size.x and \
+			   abs(local_pt.y) < zone.box_half_size.y and \
+			   abs(local_pt.z) < zone.box_half_size.z:
+				return true
+		elif z_type == 1: # ─── SPHERE ───
+			# Astuce : La multiplication est plus rapide que la division pour le CPU
+			var dx = local_pt.x / zone.box_half_size.x
+			var dy = local_pt.y / zone.box_half_size.y
+			var dz = local_pt.z / zone.box_half_size.z
+			if (dx*dx + dy*dy + dz*dz) < 1.0:
+				return true
+		elif z_type == 2: # ─── CYLINDER (Axe Y) ───
+			var dx = local_pt.x / zone.box_half_size.x
+			var dz = local_pt.z / zone.box_half_size.z
+			if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
+				return true
 	return false
 
 func _process(delta):
@@ -616,7 +620,6 @@ func _physics_process(delta: float) -> void:
 		# Détecte le moment EXACT où le joueur relâche le bouton (tentative de relevé)
 		if is_crouching != _is_pressing_crouch:
 			if not _is_pressing_crouch:
-				head_clearance_ray.force_raycast_update()
 				if head_clearance_ray.is_colliding():
 					# Collision détectée → On force le retour à l'accroupi
 					_is_pressing_crouch = true
@@ -1081,7 +1084,6 @@ func maintainInteraction() -> void:
 	if not (isHoldingObject and is_instance_valid(heldObject) and is_instance_valid(heldMarker)):
 		return
 
-	$CameraPivot/PhysicsRayCast.force_raycast_update()
 
 	if not $CameraPivot/PhysicsRayCast.is_colliding() or \
 	   $CameraPivot/PhysicsRayCast.get_collider() != heldObject:
@@ -1100,7 +1102,6 @@ func maintainInteraction() -> void:
 var _is_aiming_lamp: bool = false
 
 func InteractWithGrabbable() -> void:
-	$CameraPivot/PhysicsRayCast.force_raycast_update()
 	if not $CameraPivot/PhysicsRayCast.is_colliding():
 		return
 	var collider = $CameraPivot/PhysicsRayCast.get_collider()
@@ -1958,7 +1959,6 @@ func _play_footstep() -> void:
 	var current_ray = ray_left if _last_foot_was_left else ray_right
 	_last_foot_was_left = not _last_foot_was_left
 	
-	current_ray.force_raycast_update()
 	
 	if not current_ray.is_colliding():
 		return

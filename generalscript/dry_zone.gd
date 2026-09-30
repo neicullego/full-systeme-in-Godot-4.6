@@ -5,12 +5,13 @@ extends Area3D
 var box_half_size: Vector3 = Vector3.ZERO
 @export_enum("Box", "Sphere", "Cylinder") var zone_type: int = 0
 
+# NOUVEAU : Précalcul de la matrice inverse
+var zone_inverse_transform: Transform3D
+
 func _ready() -> void:
-	# 1. Récupération de la forme
 	var shape_node = $CollisionShape3D
 	if shape_node and shape_node.shape:
 		var shape = shape_node.shape
-		
 		if shape is BoxShape3D:
 			box_half_size = shape.size / 2.0
 		elif shape is SphereShape3D:
@@ -18,7 +19,9 @@ func _ready() -> void:
 		elif shape is CylinderShape3D or shape is CapsuleShape3D:
 			box_half_size = Vector3(shape.radius, shape.height / 2.0, shape.radius)
 
-	# 2. On s'enregistre auprès de l'eau au lancement du jeu
+	# PRÉCALCUL ICI : affine_inverse() est plus rapide et opti pour l'espace 3D
+	zone_inverse_transform = global_transform.affine_inverse()
+
 	if water_node and water_node.has_method("register_dry_zone"):
 		water_node.register_dry_zone(self)
 

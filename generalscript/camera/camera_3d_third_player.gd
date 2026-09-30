@@ -11,8 +11,8 @@ extends Camera3D
 # --- NOUVEAU : Glissez votre noeud de bulles (GPUParticles3D) ici dans l'inspecteur ---
 @export var bubble_particles: GPUParticles3D 
 
-const WATERLINE_SAMPLES := 128
-const BINARY_STEPS      := 12
+const WATERLINE_SAMPLES := 64
+const BINARY_STEPS      := 6
 
 var waterline_image:   Image
 var waterline_texture: ImageTexture
@@ -38,34 +38,35 @@ func _ready() -> void:
 func _is_lens_underwater(screen_pos: Vector2, z_depth: float) -> bool:
 	var pt3d: Vector3 = project_position(screen_pos, z_depth)
 	
-# ─── Vérification sur TOUTES les zones sèches actives (Multi-Formes) ───
+	# ─── Vérification sur TOUTES les zones sèches actives (Multi-Formes) ───
 	if water and "active_dry_zones" in water:
 		for zone in water.active_dry_zones:
-			if "box_half_size" in zone and zone.box_half_size != Vector3.ZERO:
-				var local_pt: Vector3 = zone.global_transform.inverse() * pt3d
-				var z_type = zone.zone_type if "zone_type" in zone else 0
-				
-				if z_type == 0: # ─── BOX ───
-					if abs(local_pt.x) < zone.box_half_size.x and \
-					   abs(local_pt.y) < zone.box_half_size.y and \
-					   abs(local_pt.z) < zone.box_half_size.z:
-						return false 
-				elif z_type == 1: # ─── SPHERE ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dy = local_pt.y / zone.box_half_size.y
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dy*dy + dz*dz) < 1.0:
-						return false
-				elif z_type == 2: # ─── CYLINDER (Axe Y) ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
-						return false
+			# ON UTILISE LA MATRICE PRÉCALCULÉE ! Fini l'inversion à chaque pixel
+			var local_pt: Vector3 = zone.zone_inverse_transform * pt3d
+			var z_type: int = zone.zone_type
+			
+			if z_type == 0: # ─── BOX ───
+				if abs(local_pt.x) < zone.box_half_size.x and \
+				   abs(local_pt.y) < zone.box_half_size.y and \
+				   abs(local_pt.z) < zone.box_half_size.z:
+					return false 
+			elif z_type == 1: # ─── SPHERE ───
+				# Multiplication plutôt que division (plus rapide)
+				var dx = local_pt.x * (1.0 / zone.box_half_size.x)
+				var dy = local_pt.y * (1.0 / zone.box_half_size.y)
+				var dz = local_pt.z * (1.0 / zone.box_half_size.z)
+				if (dx*dx + dy*dy + dz*dz) < 1.0:
+					return false
+			elif z_type == 2: # ─── CYLINDER (Axe Y) ───
+				var dx = local_pt.x * (1.0 / zone.box_half_size.x)
+				var dz = local_pt.z * (1.0 / zone.box_half_size.z)
+				if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
+					return false
 	# ───────────────────────────────────────────────────────────────────────
 	
 	var wave_h: float = water.get_height(pt3d)
 	return pt3d.y < wave_h
-
+	
 func _process(_delta: float) -> void:
 	# Si l'eau n'est pas encore prête dans la scène, on ne fait rien
 	if not water:

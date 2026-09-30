@@ -22,27 +22,30 @@ func _process(_delta):
 func _is_point_in_dry_zone(pt: Vector3) -> bool:
 	if water and "active_dry_zones" in water:
 		for zone in water.active_dry_zones:
-			if "box_half_size" in zone and zone.box_half_size != Vector3.ZERO:
-				# Passage en coordonnées locales par rapport à la zone sèche
-				var local_pt: Vector3 = zone.global_transform.inverse() * pt
-				var z_type = zone.zone_type if "zone_type" in zone else 0
-				
-				if z_type == 0: # ─── BOX ───
-					if abs(local_pt.x) < zone.box_half_size.x and \
-					   abs(local_pt.y) < zone.box_half_size.y and \
-					   abs(local_pt.z) < zone.box_half_size.z:
-						return true 
-				elif z_type == 1: # ─── SPHERE ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dy = local_pt.y / zone.box_half_size.y
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dy*dy + dz*dz) < 1.0:
-						return true
-				elif z_type == 2: # ─── CYLINDER (Axe Y) ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
-						return true
+			# ON UTILISE LA MATRICE PRÉCALCULÉE ! 
+			# Fini le zone.global_transform.inverse() très lourd à chaque frame pour chaque sonde.
+			var local_pt: Vector3 = zone.zone_inverse_transform * pt
+			
+			# Accès direct à la propriété (plus rapide que la recherche par chaîne "in")
+			var z_type: int = zone.zone_type
+			
+			if z_type == 0: # ─── BOX ───
+				if abs(local_pt.x) < zone.box_half_size.x and \
+				   abs(local_pt.y) < zone.box_half_size.y and \
+				   abs(local_pt.z) < zone.box_half_size.z:
+					return true 
+			elif z_type == 1: # ─── SPHERE ───
+				# Multiplication plutôt que division (plus facile à digérer pour le processeur)
+				var dx = local_pt.x * (1.0 / zone.box_half_size.x)
+				var dy = local_pt.y * (1.0 / zone.box_half_size.y)
+				var dz = local_pt.z * (1.0 / zone.box_half_size.z)
+				if (dx*dx + dy*dy + dz*dz) < 1.0:
+					return true
+			elif z_type == 2: # ─── CYLINDER (Axe Y) ───
+				var dx = local_pt.x * (1.0 / zone.box_half_size.x)
+				var dz = local_pt.z * (1.0 / zone.box_half_size.z)
+				if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
+					return true
 	return false
 # --------------------------------------------------------------------------
 

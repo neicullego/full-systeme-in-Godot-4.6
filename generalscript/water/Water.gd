@@ -319,29 +319,30 @@ func update_underwater_ambiance() -> void:
 	
 	var cam_in_dry := false
 	for zone in active_dry_zones:
-		if "box_half_size" in zone and zone.box_half_size != Vector3.ZERO:
-			var local_cam_pt: Vector3 = zone.global_transform.inverse() * cam.global_position
-			var z_type = zone.zone_type if "zone_type" in zone else 0
-			
-			if z_type == 0: # BOX
-				if abs(local_cam_pt.x) < zone.box_half_size.x and \
-				   abs(local_cam_pt.y) < zone.box_half_size.y and \
-				   abs(local_cam_pt.z) < zone.box_half_size.z:
-					cam_in_dry = true
-					break
-			elif z_type == 1: # SPHERE
-				var dx = local_cam_pt.x / zone.box_half_size.x
-				var dy = local_cam_pt.y / zone.box_half_size.y
-				var dz = local_cam_pt.z / zone.box_half_size.z
-				if (dx*dx + dy*dy + dz*dz) < 1.0:
-					cam_in_dry = true
-					break
-			elif z_type == 2: # CYLINDER
-				var dx = local_cam_pt.x / zone.box_half_size.x
-				var dz = local_cam_pt.z / zone.box_half_size.z
-				if (dx*dx + dz*dz) < 1.0 and abs(local_cam_pt.y) < zone.box_half_size.y:
-					cam_in_dry = true
-					break
+		# ON UTILISE LA MATRICE PRÉCALCULÉE !
+		var local_cam_pt: Vector3 = zone.zone_inverse_transform * cam.global_position
+		var z_type: int = zone.zone_type
+		
+		if z_type == 0: # BOX
+			if abs(local_cam_pt.x) < zone.box_half_size.x and \
+			   abs(local_cam_pt.y) < zone.box_half_size.y and \
+			   abs(local_cam_pt.z) < zone.box_half_size.z:
+				cam_in_dry = true
+				break
+		elif z_type == 1: # SPHERE
+			# Optimisation des divisions
+			var dx = local_cam_pt.x * (1.0 / zone.box_half_size.x)
+			var dy = local_cam_pt.y * (1.0 / zone.box_half_size.y)
+			var dz = local_cam_pt.z * (1.0 / zone.box_half_size.z)
+			if (dx*dx + dy*dy + dz*dz) < 1.0:
+				cam_in_dry = true
+				break
+		elif z_type == 2: # CYLINDER
+			var dx = local_cam_pt.x * (1.0 / zone.box_half_size.x)
+			var dz = local_cam_pt.z * (1.0 / zone.box_half_size.z)
+			if (dx*dx + dz*dz) < 1.0 and abs(local_cam_pt.y) < zone.box_half_size.y:
+				cam_in_dry = true
+				break
 
 	var depth := 0.0
 	if not cam_in_dry:
@@ -362,10 +363,16 @@ func update_underwater_ambiance() -> void:
 		fog_mat.set_shader_parameter("max_depth",  max_depth)
 		fog_mat.set_shader_parameter("fog_color",  water_fog_color)
 		if infinite_ocean:
-			water_fog_volume.global_position.x = cam.global_position.x
-			water_fog_volume.global_position.z = cam.global_position.z
-			water_fog_volume.global_position.y = (surface_y + fog_height_offset) - (water_fog_volume.size.y * 0.5)
-
+			# On compare la position X/Z de la caméra et du brouillard
+			var cam_pos_2d = Vector2(cam.global_position.x, cam.global_position.z)
+			var fog_pos_2d = Vector2(water_fog_volume.global_position.x, water_fog_volume.global_position.z)
+			
+			# On ne déplace le volume que si on s'est éloigné de plus de 100 mètres
+			if cam_pos_2d.distance_to(fog_pos_2d) > 25.0:
+				water_fog_volume.global_position.x = cam.global_position.x
+				water_fog_volume.global_position.z = cam.global_position.z
+				water_fog_volume.global_position.y = (surface_y + fog_height_offset) - (water_fog_volume.size.y * 0.5)
+				
 	var fog_depth: float = depth + fog_height_offset
 
 	if env and env.environment:
@@ -383,13 +390,19 @@ func update_underwater_ambiance() -> void:
 			env.environment.volumetric_fog_sky_affect = default_volumetric_fog_sky_affect
 
 
+# Variable pour garder en mémoire la caméra de l'éditeur sans la re-chercher à chaque frame
+var _editor_camera_cache: Camera3D
+
 func _get_active_camera() -> Camera3D:
 	if Engine.is_editor_hint():
-		# On vérifie et récupère le singleton via une chaîne de caractères
-		if Engine.has_singleton("EditorInterface"):
-			var editor_interface = Engine.get_singleton("EditorInterface")
-			var viewport_3d = editor_interface.get_editor_viewport_3d(0)
-			return viewport_3d.get_camera_3d() if viewport_3d else null
-		return null
+		# Si la caméra n'est pas encore en cache ou a été détruite, on la récupère UNE SEULE FOIS
+		if not is_instance_valid(_editor_camera_cache):
+			if Engine.has_singleton("EditorInterface"):
+				var ei = Engine.get_singleton("EditorInterface")
+				var vp = ei.get_editor_viewport_3d(0) if ei else null
+				if vp:
+					_editor_camera_cache = vp.get_camera_3d()
+		
+		return _editor_camera_cache
 	else:
 		return get_viewport().get_camera_3d()
