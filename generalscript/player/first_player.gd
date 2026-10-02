@@ -354,6 +354,7 @@ func _ready():
 	_toe_r_idx = skeleton.find_bone(toe_right_bone_name)
 	if _toe_r_idx == -1:
 		push_warning("FootIK: Os orteil droit introuvable !")
+	_ignore_self_collisions(self)
 	print("Fin du _ready() du joueur : ", global_position)
 		
 		
@@ -2108,3 +2109,16 @@ func _update_climb_animation(delta: float) -> void:
 	if is_climbing_ladder:
 		climb_speed_ratio = clamp(velocity.y / ladder_climb_speed, -1.0, 1.0)
 	anim_tree.set("parameters/TimeScale/scale", climb_speed_ratio)
+
+func _ignore_self_collisions(node: Node) -> void:
+	for child in node.get_children():
+		if child is RayCast3D:
+			# Le Raycast ignorera la Hitbox de ce script
+			child.add_exception(self)
+		elif child is SpringArm3D:
+			# Le SpringArm utilise le RID pour les exclusions
+			child.add_excluded_object(self.get_rid())
+		
+		# Récursion pour s'assurer de trouver les nœuds imbriqués (ex: dans CameraPivot)
+		if child.get_child_count() > 0:
+			_ignore_self_collisions(child)

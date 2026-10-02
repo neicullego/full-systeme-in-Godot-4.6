@@ -11,6 +11,8 @@ density = -23.743
 [node name="Post Process Volume" type="Node3D" unique_id=2104117676]
 
 [node name="DryZone" type="Area3D" parent="." unique_id=1200408124]
+collision_layer = 8
+collision_mask = 2
 script = ExtResource("1_gouhp")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="DryZone" unique_id=1683528079]

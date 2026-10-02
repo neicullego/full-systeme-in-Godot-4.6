@@ -1,3 +1,4 @@
+AudioStreamPlayer3D
 HSlider
 Label
 OptionButton
@@ -12,4 +13,3 @@ StaticBody3D
 MeshInstance3D
 Area3D
 RayCast3D
-RigidBody3D

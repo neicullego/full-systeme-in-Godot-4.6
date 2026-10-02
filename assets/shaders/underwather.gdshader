@@ -18,11 +18,14 @@ uniform float meniscus_opacity : hint_range(0.0, 1.0) = 0.7; // Transparence de 
 void fragment() {
     vec2 uv = SCREEN_UV;
 
-    // ── 1. L'EFFET SPLINE ──
-    float blur = 0.006;
+    // ── 1. L'EFFET SPLINE (LISSAGE HORIZONTAL) ──
+    // On échantillonne 3 points (gauche, centre, droite) pour créer une courbe douce
+    float blur = 0.006; // Écart entre les points échantillonnés
     float h_left   = texture(waterline_texture, vec2(uv.x - blur, 0.5)).r;
     float h_center = texture(waterline_texture, vec2(uv.x, 0.5)).r;
     float h_right  = texture(waterline_texture, vec2(uv.x + blur, 0.5)).r;
+    
+    // Moyenne pondérée (Le centre a plus de poids) pour créer la courbure
     float dynamic_waterline = (h_left + h_center * 2.0 + h_right) / 4.0;
 
     // ── 2. GESTION DES MASQUES ──
@@ -30,35 +33,46 @@ void fragment() {
     float spline_mask = 0.0;
 
     if (dynamic_waterline <= 0.0) {
-        blend = 1.0; 
+        blend = 1.0; // 100% sous l'eau
     } else if (dynamic_waterline >= 1.0) {
-        blend = 0.0; 
+        blend = 0.0; // 100% dans l'air
     } else {
-        blend = smoothstep(dynamic_waterline - waterline_softness, dynamic_waterline + waterline_softness, uv.y);
+        // Calcul du fondu principal entre air et eau
+        blend = smoothstep(
+            dynamic_waterline - waterline_softness,
+            dynamic_waterline + waterline_softness,
+            uv.y
+        );
+        
+        // CALCUL DE LA SPLINE : On mesure la distance entre le pixel actuel et la ligne
         float distance_to_line = abs(uv.y - dynamic_waterline);
+        
+        // On crée une ligne épaisse, centrée exactement sur la démarcation
         spline_mask = 1.0 - smoothstep(0.0, meniscus_thickness, distance_to_line);
     }
 
-    // ── 3. OPTIMISATION MASSIVE : MIX DES UVS ──
+    // ── 3. ZONE UNDERWATER ──
     vec2 distorted_uv = uv;
+    // On annule la distorsion tout près de la surface pour ne pas "déchirer" la spline
     float depth_from_surface = max(0.0, uv.y - dynamic_waterline);
     distorted_uv.x += sin(uv.y * 0.05 + time * 0.1) * distortion_strength * smoothstep(0.0, 0.05, depth_from_surface);
     
-    // On mélange les coordonnées UV AVANT de lire la texture (1 seule lecture au lieu de 2 !)
-    vec2 final_uv = mix(uv, distorted_uv, blend);
-    vec4 final_color = texture(screen_texture, final_uv);
+    vec4 underwater_color = texture(screen_texture, distorted_uv);
 
-    // ── 4. COULEURS SOUS-MARINES (Seulement si nécessaire) ──
-    if (blend > 0.0) {
-        float depth_factor = exp(-uv.y * light_absorption_strength);
-        vec3 underwater_rgb = final_color.rgb * depth_factor;
-        underwater_rgb = mix(underwater_rgb, water_color.rgb, water_color.a);
-        
-        // On applique la teinte finale selon le blend
-        final_color.rgb = mix(final_color.rgb, underwater_rgb, blend);
-    }
+    // Absorption de la lumière sous l'eau
+    float depth_factor = exp(-uv.y * light_absorption_strength);
+    underwater_color.rgb *= depth_factor;
+    underwater_color = mix(underwater_color, water_color, water_color.a);
 
-    // ── 5. LE MÉNISQUE ──
+    // ── 4. ZONE AIR ──
+    vec4 air_color = texture(screen_texture, uv);
+
+    // ── 5. MIX FINAL ──
+    // On assemble l'air et l'eau...
+    vec4 final_color = mix(air_color, underwater_color, blend);
+
+    // ... ET LA MAGIE OPÈRE ICI : 
+    // On plaque la spline du ménisque PAR-DESSUS l'assemblage pour sceller la coupure !
     final_color.rgb = mix(final_color.rgb, meniscus_color, spline_mask * meniscus_opacity);
 
     COLOR = final_color;

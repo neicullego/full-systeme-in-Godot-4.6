@@ -25,8 +25,8 @@ script = ExtResource("1_ott1y")
 item_data = ExtResource("2_jdfku")
 
 [node name="container_of_markers" type="RigidBody3D" parent="." unique_id=1690728608]
-collision_layer = 14
-collision_mask = 14
+collision_layer = 32
+collision_mask = 39
 script = ExtResource("3_1okks")
 water_drag = 1.0
 water_angular_drag = 1.0
@@ -36,8 +36,8 @@ transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0.00
 shape = SubResource("BoxShape3D_jdfku")
 
 [node name="Area3D" type="Area3D" parent="container_of_markers" unique_id=206466063]
-collision_layer = 15
-collision_mask = 15
+collision_layer = 64
+collision_mask = 64
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="container_of_markers/Area3D" unique_id=75696887]
 shape = SubResource("SphereShape3D_hn07y")

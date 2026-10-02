@@ -17,8 +17,7 @@ shader_parameter/inner_radius = 0.35
 shader_parameter/outer_radius = 0.45
 
 [node name="CooldownInteractable" type="StaticBody3D" unique_id=91786948]
-collision_layer = 15
-collision_mask = 15
+collision_mask = 101
 script = ExtResource("1_lv6tp")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=913924448]
@@ -37,3 +36,6 @@ material_override = SubResource("ShaderMaterial_tu2o0")
 billboard = 1
 render_priority = 1
 texture = ExtResource("3_dx6gf")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=775520292]
+max_distance = 10.0

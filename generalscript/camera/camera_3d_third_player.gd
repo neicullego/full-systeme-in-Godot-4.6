@@ -82,12 +82,13 @@ func _process(_delta: float) -> void:
 	# Détermination de l'état de la caméra (gère nativement les zones sèches)
 	var cam_is_underwater: bool = _is_lens_underwater(vp / 2.0, base_z)
 	
-	if not $Underwater_ambiance.playing:
-		if cam_is_underwater:
-			$Underwater_ambiance.play()
-	if $Underwater_ambiance.playing:
-		if not cam_is_underwater:	
-			$Underwater_ambiance.stop()
+	if is_multiplayer_authority():
+		if not $Underwater_ambiance.playing:
+			if cam_is_underwater:
+				$Underwater_ambiance.play()
+		if $Underwater_ambiance.playing:
+			if not cam_is_underwater:	
+				$Underwater_ambiance.stop()
 	
 	if bubble_particles:
 		# Gestion de l'émission globale selon la position de la caméra de chaque joueur

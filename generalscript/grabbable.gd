@@ -60,7 +60,7 @@ func rpc_release_grab(peer_id: int) -> void:
 	set_collision_mask_value(2, true)
 
 
-@rpc("any_peer", "call_local", "reliable")
+@rpc("any_peer", "call_local", "unreliable")
 func rpc_update_pull_target(peer_id: int, target_pos: Vector3) -> void:
 	if _holder_peer_id != peer_id:
 		return
@@ -68,7 +68,7 @@ func rpc_update_pull_target(peer_id: int, target_pos: Vector3) -> void:
 	_has_pull_target = true
 
 
-@rpc("any_peer", "call_local", "reliable")
+@rpc("any_peer", "call_local", "unreliable")
 func rpc_apply_rotation(peer_id: int, axis: Vector3, angle_delta_rad: float) -> void:
 	if _holder_peer_id != peer_id:
 		return

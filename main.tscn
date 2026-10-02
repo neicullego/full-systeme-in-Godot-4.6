@@ -118,14 +118,13 @@ shadow_enabled = true
 
 [node name="Cube" type="RigidBody3D" parent="." unique_id=1909480409]
 transform = Transform3D(-0.761663, 0, -0.647974, 0, 1, 0, 0.647974, 0, -0.761663, -9.728559, 54.767967, 3.6477928)
-collision_layer = 6
-collision_mask = 6
+collision_layer = 4
+collision_mask = 4
 mass = 10.0
 script = ExtResource("3_wnrpb")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Cube" unique_id=338457840]
 transform = Transform3D(0.9999999, 0, -2.9802322e-08, 0, 1, 0, 2.9802322e-08, 0, 0.9999999, 0, 0, 0)
-layers = 3
 mesh = SubResource("BoxMesh_km0el")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cube" unique_id=852050042]
@@ -180,48 +179,44 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, 2.5937219)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1988882439]
 transform = Transform3D(19.14769, 0, 0, 0, 1, 0, 0, 0, 19.557905, 0.014627457, 55.240562, -10.9109125)
-layers = 3
 mesh = SubResource("BoxMesh_lquwl")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D" unique_id=1694198758 groups=["mat_metal"]]
-collision_layer = 7
-collision_mask = 7
+collision_layer = 3
+collision_mask = 69
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=662300281]
 shape = SubResource("ConvexPolygonShape3D_lquwl")
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1923992822]
 transform = Transform3D(1.385127, 0, 0, 0, 1, 0, 0, 0, 1.3191146, 2.4866433, 56.24581, -10.900382)
-layers = 3
 mesh = SubResource("BoxMesh_lquwl")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D4" unique_id=1956478789]
-collision_layer = 7
-collision_mask = 7
+collision_layer = 3
+collision_mask = 69
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D4/StaticBody3D" unique_id=1087529145]
 shape = SubResource("ConvexPolygonShape3D_lquwl")
 
 [node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=1178138546]
 transform = Transform3D(1.385127, 0, 0, 0, 1, 0, 0, 0, 1.3191146, 2.4866433, 57.522045, -13.242253)
-layers = 3
 mesh = SubResource("BoxMesh_lquwl")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D5" unique_id=457478201]
-collision_layer = 7
-collision_mask = 7
+collision_layer = 3
+collision_mask = 69
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D5/StaticBody3D" unique_id=2031968963]
 shape = SubResource("ConvexPolygonShape3D_lquwl")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1241041029]
 transform = Transform3D(1.5738942e-07, 0.4327603, 16.116182, 7.8742005e-08, 1.118211, -6.2371426, -5.2811127, -1.4550506e-08, 3.6652816e-07, 17.35387, 52.013695, -12.19068)
-layers = 3
 mesh = SubResource("BoxMesh_7mycd")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2" unique_id=2001808435]
-collision_layer = 7
-collision_mask = 7
+collision_layer = 3
+collision_mask = 69
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D" unique_id=1856601096]
 shape = SubResource("BoxShape3D_272bh")
@@ -252,8 +247,7 @@ mesh = SubResource("BoxMesh_ycdy4")
 surface_material_override/0 = ExtResource("14_w48qg")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D6" unique_id=287847484]
-collision_layer = 15
-collision_mask = 15
+collision_mask = 69
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D6/StaticBody3D" unique_id=1140753427]
 shape = SubResource("BoxShape3D_seu75")
@@ -268,8 +262,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.36035, 56.277122, -10.1351
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.250472, 57.263695, -7.9904804)
 tool_required_id = "Tournevis"
-single_use = null
-cooldown_duration = null
 
 [node name="PlancheClouee" parent="." unique_id=878546914 instance=ExtResource("20_82xsv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 57.85064, -7.8725286)
@@ -298,6 +290,7 @@ transform = Transform3D(0.4039631, 0, 0, 0, 2.6283226, 0, 0, 0, 0.2995755, 2.074
 
 [node name="ClimbOutZone" parent="." unique_id=877411160 instance=ExtResource("24_0odxb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.063229, 52.053303, -0.23151028)
+collision_mask = 66
 
 [node name="CollisionShape3D" parent="ClimbOutZone" index="0" unique_id=2046065224]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.527771, -0.50652075)
