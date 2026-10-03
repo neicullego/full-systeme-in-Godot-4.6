@@ -77,7 +77,12 @@ func _update_indicator() -> void:
 
 	# Si c'est un objet interactif valide, on affiche l'indicateur dessus
 	if interactable:
-		_indicator.show_for(interactable)
+		# 🆕 AJOUT : On cache l'indicateur si c'est un Grabbable déjà tenu en main
+		if interactable.has_method("is_held") and interactable.is_held():
+			_indicator.hide_indicator()
+		else:
+			# (Rappel de la correction précédente : on cible bien le collider)
+			_indicator.show_for(collider)
 	else:
 		_indicator.hide_indicator()
 
@@ -85,7 +90,13 @@ func _update_indicator() -> void:
 func _get_interactable_node(collider: Node) -> Node:
 	if collider == null:
 		return null
-
+	
+	var climber = _find_in_group(collider, "Climber")
+	if climber: return climber
+	
+	var grabbable = _find_in_group(collider, "Grabbable")
+	if grabbable: return grabbable
+	
 	var pickup = _find_in_group(collider, "Pickup")
 	if pickup: return pickup
 

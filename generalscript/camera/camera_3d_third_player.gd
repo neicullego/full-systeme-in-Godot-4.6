@@ -4,7 +4,10 @@ extends Camera3D
 # Le(s) matériau(x) de vos vitres de base sous-marine
 @export var glass_materials: Array[ShaderMaterial]
 
-@onready var water = get_tree().get_first_node_in_group("water")
+# L'eau n'est plus figée une seule fois dans _ready() : elle est (re)résolue et validée
+# à chaque frame par _ensure_water(). Sinon, si l'ancienne scène existe encore à cet
+# instant, on reste accroché à SON eau (ou à null) pour toute la durée de vie de la caméra.
+var water = null
 
 @onready var post_process_rect = $CanvasLayer/ColorRect
 
@@ -21,26 +24,134 @@ func _ready() -> void:
 	# Priorité 1 pour tout le monde afin de s'exécuter après la mise à jour du script de l'eau
 	process_priority = 1
 
-	if not is_multiplayer_authority():
-		if post_process_rect:
-			post_process_rect.visible = false
-		# On ne fait pas de "return" ici, on laisse le process se lancer pour les bulles
-	else:
-		post_process_rect.visible = true
-		# L'initialisation de l'effet d'écran ne se fait que pour le joueur local
-		waterline_image   = Image.create(WATERLINE_SAMPLES, 1, false, Image.FORMAT_RF)
-		waterline_texture = ImageTexture.create_from_image(waterline_image)
+	# L'effet d'écran reste MASQUÉ par défaut : _process() ne l'affiche que s'il y a de l'eau
+	# dans la scène (voir _go_dormant() quand il n'y en a pas).
+	if post_process_rect:
+		post_process_rect.visible = false
 
-		if post_process_rect and post_process_rect.material:
-			var mat: ShaderMaterial = post_process_rect.material
-			mat.set_shader_parameter("waterline_texture", waterline_texture)
+	# On ne fait pas de "return" ici, on laisse le process se lancer pour les bulles
+	if is_multiplayer_authority():
+		# L'initialisation de l'effet d'écran ne se fait que pour le joueur local
+		_init_waterline()
+
+
+# Création de la texture de ligne d'eau. Appelée depuis _ready() ET, au besoin, depuis
+# _process() : si l'autorité multijoueur est attribuée APRÈS le _ready() de la caméra,
+# l'init n'avait jamais lieu et le shader gardait une texture vide (= "sous l'eau partout").
+func _init_waterline() -> void:
+	waterline_image   = Image.create(WATERLINE_SAMPLES, 1, false, Image.FORMAT_RF)
+	waterline_image.fill(Color(1.1, 0.0, 0.0, 1.0)) # 1.1 = "à sec" tant que rien n'est calculé
+	waterline_texture = ImageTexture.create_from_image(waterline_image)
+
+	if post_process_rect and post_process_rect.material:
+		var mat: ShaderMaterial = post_process_rect.material
+
+		# Copie PRIVÉE du matériau : on ne le partage plus avec une autre caméra
+		# (cinématique / ancienne scène) qui écrirait dedans en même temps.
+		# EXCEPTION : si ce matériau est aussi `underwater_material` de Water.gd, Water.gd
+		# lui envoie des paramètres (inv_view_matrix, camera_in_dry_zone...). Une copie ne
+		# les recevrait plus, donc on garde alors l'original.
+		var w = _find_water()
+		var driven_by_water: bool = w != null and "underwater_material" in w and w.underwater_material == mat
+		if not driven_by_water:
+			mat = mat.duplicate() as ShaderMaterial
+			post_process_rect.material = mat
+
+		mat.set_shader_parameter("waterline_texture", waterline_texture)
+
+
+# Cherche l'eau qui appartient à LA MÊME scène que cette caméra, en ignorant celles
+# qui sont en cours de suppression (ancienne scène pas encore vraiment libérée).
+func _find_water() -> Node:
+	var candidates: Array[Node] = get_tree().get_nodes_in_group("water")
+	if candidates.is_empty():
+		return null
+
+	# Racine de "ma" scène = l'ancêtre direct de /root
+	var scene_root: Node = self
+	while scene_root.get_parent() != null and scene_root.get_parent() != get_tree().root:
+		scene_root = scene_root.get_parent()
+
+	for w in candidates:
+		if not w.is_queued_for_deletion() and scene_root.is_ancestor_of(w):
+			return w
+	# Repli : première eau valide, même si elle est dans une autre branche
+	for w in candidates:
+		if not w.is_queued_for_deletion():
+			return w
+	return null
+
+
+# Garantit que `water` pointe vers une eau vivante, dans l'arbre, et pas en cours de suppression.
+func _ensure_water() -> bool:
+	if is_instance_valid(water) and water.is_inside_tree() and not water.is_queued_for_deletion():
+		return true
+
+	var new_water = _find_water()
+	# Petit log de diagnostic (uniquement quand ça change) : permet de voir à quelle eau on s'accroche
+	if new_water != water:
+		print("[", name, "] eau résolue : ", str(new_water.get_path()) if new_water else "AUCUNE")
+	water = new_water
+	return water != null
+
+
+# Pas d'eau valide : on coupe tous les effets pour ne pas garder un état périmé
+# (ex. le shader "sous l'eau" figé alors qu'on est dans une zone sèche).
+func _disable_effects() -> void:
+	if bubble_particles:
+		bubble_particles.emitting = false
+	if has_node("Underwater_ambiance") and $Underwater_ambiance.playing:
+		$Underwater_ambiance.stop()
+	if post_process_rect:
+		post_process_rect.visible = false
+
+
+# ─── MODE "PAS D'EAU DANS LA SCÈNE" ─────────────────────────────────────────────
+# Aucune eau trouvée = la scène n'en contient pas. On coupe alors TOUT : plus d'effet
+# d'écran, plus de bulles, plus de son, et surtout plus aucun _process (zéro calcul par frame).
+# Si une eau est ajoutée plus tard dans l'arbre, on se réveille automatiquement
+# (signal node_added : pas de polling, donc aucun coût tant que rien ne se passe).
+var _watching_for_water: bool = false
+
+func _go_dormant() -> void:
+	_disable_effects()
+	set_process(false)
+	if not _watching_for_water:
+		get_tree().node_added.connect(_on_node_added)
+		_watching_for_water = true
+
+
+func _on_node_added(node: Node) -> void:
+	if node.is_in_group("water") and _ensure_water():
+		_stop_watching()
+		set_process(true)
+
+
+func _stop_watching() -> void:
+	if not _watching_for_water:
+		return
+	_watching_for_water = false
+	if is_inside_tree() and get_tree().node_added.is_connected(_on_node_added):
+		get_tree().node_added.disconnect(_on_node_added)
+
+
+func _exit_tree() -> void:
+	_stop_watching()
+
 
 func _is_lens_underwater(screen_pos: Vector2, z_depth: float) -> bool:
+	if not is_instance_valid(water):
+		return false
+
 	var pt3d: Vector3 = project_position(screen_pos, z_depth)
 	
 	# ─── Vérification sur TOUTES les zones sèches actives (Multi-Formes) ───
-	if water and "active_dry_zones" in water:
+	if "active_dry_zones" in water:
 		for zone in water.active_dry_zones:
+			# Une zone peut avoir été libérée pendant un changement de scène :
+			# on l'ignore au lieu de faire planter toute la fonction (qui renverrait false).
+			if not is_instance_valid(zone):
+				continue
 			# ON UTILISE LA MATRICE PRÉCALCULÉE ! Fini l'inversion à chaque pixel
 			var local_pt: Vector3 = zone.zone_inverse_transform * pt3d
 			var z_type: int = zone.zone_type
@@ -68,8 +179,9 @@ func _is_lens_underwater(screen_pos: Vector2, z_depth: float) -> bool:
 	return pt3d.y < wave_h
 	
 func _process(_delta: float) -> void:
-	# Si l'eau n'est pas encore prête dans la scène, on ne fait rien
-	if not water:
+	# (Re)trouve une eau valide. Sinon : pas d'eau dans la scène -> on ne calcule plus rien.
+	if not _ensure_water():
+		_go_dormant()
 		return
 
 	var vp: Vector2 = get_viewport().get_visible_rect().size
@@ -120,6 +232,13 @@ func _process(_delta: float) -> void:
 		if post_process_rect:
 			post_process_rect.visible = false
 		return # Les autres joueurs s'arrêtent ici !
+
+	# Réaffiche l'effet (il a pu être masqué par _disable_effects) et initialise
+	# la texture si l'autorité n'était pas encore attribuée lors du _ready()
+	if post_process_rect:
+		post_process_rect.visible = true
+	if waterline_image == null:
+		_init_waterline()
 
 	# Sécurité pour le joueur local
 	if not post_process_rect or not post_process_rect.material:

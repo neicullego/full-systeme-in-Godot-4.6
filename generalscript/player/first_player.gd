@@ -1768,23 +1768,27 @@ func _update_oxygen(delta: float) -> void:
 		return
 
 	var head_submerged := false
-	var head_depth := 0.0
+	var head_depth := 0.0   
 	
 	if water:
 		var water_height: float = water.get_height(mouth_anchor.global_position)
 		head_depth = water_height - mouth_anchor.global_position.y
-		head_submerged = head_depth > 0.0
+		
+		# --- CORRECTION ICI : La tête doit être sous l'eau ET PAS dans une zone sèche ---
+		if head_depth > 0.0:
+			if not _is_in_dry_zone(mouth_anchor.global_position):
+				head_submerged = true
 
-	wearing_heavy_suit = _is_wearing_heavy_suit()   # 🆕 annule tous les effets de profondeur
+	wearing_heavy_suit = _is_wearing_heavy_suit()
 
 	if head_submerged:
-		# 🆕 Au-delà du seuil critique : dégâts directs, quel que soit l'air restant — sauf en scaphandre
+		# Au-delà du seuil critique : dégâts directs, quel que soit l'air restant — sauf en scaphandre
 		if not wearing_heavy_suit and head_depth >= depth_damage_threshold:
 			if not $AudioStreamPlayer3D.playing:
 				$AudioStreamPlayer3D.play()
 			take_damage(depth_damage_per_sec * delta)
 
-		# 🆕 Plus on descend, plus l'air se consomme vite — sauf en scaphandre (respiration normale à toute profondeur)
+		# Plus on descend, plus l'air se consomme vite — sauf en scaphandre
 		var drain_multiplier := 1.0
 		if not wearing_heavy_suit and head_depth > depth_drain_start:
 			var t: float = clamp(
@@ -1799,6 +1803,7 @@ func _update_oxygen(delta: float) -> void:
 				$AudioStreamPlayer3D.play()
 			take_damage(drowning_damage_per_sec * delta)
 	else:
+		# Le joueur respire (tête hors de l'eau OU dans une zone sèche)
 		current_oxygen = min(current_oxygen + oxygen_regen_rate * delta, max_oxygen)
 
 	if oxygen_bar_ui:

@@ -16,7 +16,6 @@ func _ready() -> void:
 		add_to_group("Pickup")
 
 ## Appelée par l'InteractionManager quand le joueur ramasse cet objet
-## Appelée par l'InteractionManager quand le joueur ramasse cet objet
 func get_picked_up() -> ItemData:
 	var data = item_data
 	if data == null or not data.stays_on_ground:

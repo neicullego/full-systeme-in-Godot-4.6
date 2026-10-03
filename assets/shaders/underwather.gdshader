@@ -60,8 +60,6 @@ void fragment() {
     vec4 underwater_color = texture(screen_texture, distorted_uv);
 
     // Absorption de la lumière sous l'eau
-    float depth_factor = exp(-uv.y * light_absorption_strength);
-    underwater_color.rgb *= depth_factor;
     underwater_color = mix(underwater_color, water_color, water_color.a);
 
     // ── 4. ZONE AIR ──

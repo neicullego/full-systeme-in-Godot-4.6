@@ -6,6 +6,8 @@ static var instance: GameMenu
 
 const PORT := 7777
 
+var _transition_id: int = 0
+
 ## Nombre maximum de joueurs par partie (modifiable directement depuis l'Inspecteur)
 @export_range(1, 16, 1, "or_greater") var max_players: int = 4
 
@@ -289,20 +291,25 @@ func _start_game(all_skin_choices: Dictionary) -> void:
 
 
 func _launch_game() -> void:
+	var id := _transition_id
 	hide()
+	await _free_and_wait(get_node_or_null("SubViewportContainer/SubViewport/Node3D"))
+	if id != _transition_id:
+		return   # le joueur a quitté pendant la transition
 	var cinematic_scene: PackedScene = load("res://scene/cinematique.tscn")
 	cinematic_instance = cinematic_scene.instantiate()
 	get_tree().root.add_child(cinematic_instance)
 	cinematic_instance.finished.connect(_on_cinematic_finished, CONNECT_ONE_SHOT)
-	$SubViewportContainer/SubViewport/Node3D.queue_free()
 	
 func _on_cinematic_finished() -> void:
-	if is_instance_valid(cinematic_instance):
-		cinematic_instance.queue_free()
+	var id := _transition_id
+	var old_cinematic := cinematic_instance
 	cinematic_instance = null
 
-	# On attend la fin de la frame pour que Godot détruise VRAIMENT la cinématique
-	await get_tree().process_frame
+	# On attend que la cinématique ait VRAIMENT quitté l'arbre (eau, zones sèches, caméra)
+	await _free_and_wait(old_cinematic)
+	if id != _transition_id:
+		return   # le joueur a quitté pendant la transition
 
 	var game_scene: PackedScene = load("res://main.tscn")
 	game_instance = game_scene.instantiate()
@@ -369,6 +376,7 @@ func leave_multiplayer_game() -> void:
 ## Nettoyage complet + retour à l'écran d'accueil (res://scene/ui/menu.tscn,
 ## qui est déjà cette scène-ci : pas besoin de la recharger, juste de la réafficher).
 func _return_to_menu(message: String = "") -> void:
+	_transition_id += 1
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	if is_instance_valid(cinematic_instance):   # 🆕
 		cinematic_instance.queue_free()
@@ -406,3 +414,13 @@ func _on_credi_pressed() -> void:
 	retour.visible = true
 	menu.visible = false
 	credit.visible = true
+
+func _free_and_wait(node: Node) -> void:
+	if not is_instance_valid(node):
+		return
+	if node.is_inside_tree():
+		node.queue_free()
+		await node.tree_exited
+	else:
+		node.queue_free()
+	await get_tree().process_frame

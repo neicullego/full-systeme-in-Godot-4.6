@@ -1,4 +1,4 @@
-res://scene/player/third_player_aventure.tscn
+res://scene/items/PoisonPickup.tscn
 res://assets/material/vitre.tres
 res://assets/shaders/underwather.gdshader
 res://assets/shaders/bulle_d_air.gdshader
@@ -9,9 +9,11 @@ res://assets/shaders/water_fog.gdshader
 res://assets/shaders/cooldown_interactable.gdshader
 res://assets/shaders/vitre.gdshader
 res://assets/shaders/Eau plate.gdshader
-res://generalscript/player/third_player_aventure.gd
-res://scene/player/third_player.tscn
-res://generalscript/player/third_player.gd
+res://generalscript/items/KeyPickup.gd
+res://scene/Système/interaction_indicator.tscn
+res://generalscript/interaction_indicator.gd
+res://scene/grabbable.tscn
+res://generalscript/InteractionManager.gd
 res://scene/player/first_player.tscn
-res://generalscript/player/first_player.gd
+res://scene/climb_out_zone.tscn
 res://main.tscn

@@ -4,13 +4,14 @@ class_name InteractionIndicator
 
 @onready var sprite: Sprite3D = $Sprite3D
 
-@export var height_offset: float = 0.5  # Hauteur au-dessus de l'objet ciblé
+@export var height_offset: float = 0.0  # Hauteur au-dessus de l'objet ciblé
 
 var _is_shaking: bool = false
 var _shake_tween: Tween = null
 var _current_target: Node = null
 
 func _ready() -> void:
+	top_level = true
 	visible = false
 	# 🔒 SÉCURITÉ MULTIJOUEUR : Si cet indicateur appartient à la marionnette 
 	# d'un autre joueur, on coupe son traitement pour ne pas polluer l'écran local.
