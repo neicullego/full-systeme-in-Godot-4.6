@@ -118,6 +118,7 @@ var _cooldown_marker: Marker3D = null    # Marker IK de la cible
 
 # Marqueur de l'item en cours de ramassage (comme heldMarker pour les portes)
 var _pickup_marker: Marker3D = null
+var _wants_to_drop_pickup: bool = false
 var heldMarker = null
 #Système de déplacement du bras kinématique inverse
 # Pour la main (Hand IK)
@@ -579,6 +580,8 @@ func _physics_process(delta: float) -> void:
 	
 	# Sortie de bassin (court-circuite toute la physique normale)
 	if _is_climbing_out:
+		if is_multiplayer_authority():
+			_update_oxygen(delta) # <-- AJOUT : L'oxygène continue de se mettre à jour
 		_update_climb_out(delta)
 		move_and_slide()
 		return
@@ -591,6 +594,8 @@ func _physics_process(delta: float) -> void:
 		
 	# Échelle (court-circuite la marche/nage tant que le joueur grimpe)
 	if _handle_ladder_physics(delta):
+		if is_multiplayer_authority():
+			_update_oxygen(delta) # <-- AJOUT : L'oxygène continue de se mettre à jour
 		move_and_slide()
 		return
 		
@@ -741,12 +746,21 @@ func _physics_process(delta: float) -> void:
 		
 	
 		#Système d'interaction
-		if Input.is_action_pressed("interact"):
-			if not isHoldingObject and not isCarryingObject:   # 🆕
+		var wants_to_interact = Input.is_action_pressed("interact")
+		
+		# MAGIE : Si la main est en route vers l'objet (influence < 0.95), 
+		# on simule un clic gauche maintenu pour forcer le bras à finir son mouvement.
+		if is_hand_interact_active and _arm_ik_influence < 0.95:
+			wants_to_interact = true
+
+		if wants_to_interact:
+			if not isHoldingObject and not isCarryingObject:
 				InteractWithDoor()
-				if not isHoldingObject:   # 🆕 pas une porte : on tente un objet à deux mains
+				if not isHoldingObject:
 					InteractWithGrabbable()
 		else:
+			# Ce bloc s'exécutera NATURELLEMENT une fois que l'influence atteindra 0.95
+			# (si le joueur a relâché le clic entre temps).
 			if isHoldingObject and is_instance_valid(heldObject):
 					heldObject.rpc_release_grab.rpc(multiplayer.get_unique_id())
 					_rpc_sync_drop_ik.rpc()
@@ -754,10 +768,11 @@ func _physics_process(delta: float) -> void:
 			heldObject = null
 			heldMarker = null
 			is_hand_interact_active = false
-			if isCarryingObject:   # 🆕
+			if isCarryingObject:
 				_release_carry()
+				
 		maintainInteraction()
-		maintainCarry(delta)   # 🆕
+		maintainCarry(delta)
 		
 		if is_multiplayer_authority():
 			_update_camera_attachment(is_swimming)   # ← AJOUT
@@ -1234,7 +1249,16 @@ func _update_hand_ik(delta: float) -> void:
 		return
 
 	# ── Reste du code _update_hand_ik existant ────────────────────────────────
-	var target_influence = 1.0 if (is_hand_interact_active or _is_aiming_lamp) else 0.0   # 🆕
+	var target_influence = 1.0 if (is_hand_interact_active or _is_aiming_lamp) else 0.0   
+	
+	# --- NOUVEAU : Gestion du ramassage "forcé" (Clic court) ---
+	if _pickup_marker != null and _wants_to_drop_pickup:
+		target_influence = 1.0 # On force la main à finir son trajet vers l'objet
+		
+		# Si on a atteint la cible (influence maximale), on exécute enfin le retour !
+		if _arm_ik_influence >= 0.95:
+			_execute_pickup_drop()
+			
 	var blend_speed = _hand_lerp_speed
 	_arm_ik_influence = lerp(_arm_ik_influence, target_influence, blend_speed * delta)
 
@@ -1278,15 +1302,25 @@ func find_marker_node(door_node: Node) -> Node:
 	
 	
 func activate_pickup_hand_ik(target_marker: Marker3D) -> void:
-	_pickup_marker = target_marker  # ← on stocke le marker, pas juste la position
+	_pickup_marker = target_marker 
 	is_hand_interact_active = true
+	_wants_to_drop_pickup = false # <-- AJOUT : annule l'intention de lâcher si on reclique
 	if is_multiplayer_authority() and _pickup_marker:
 		_rpc_sync_pickup_ik.rpc(_pickup_marker.get_path())
 	
 
 func deactivate_pickup_hand_ik() -> void:
+	if _arm_ik_influence >= 0.95:
+		# Si le bras est déjà (presque) arrivé, on lâche normalement
+		_execute_pickup_drop()
+	else:
+		# Sinon, on mémorise qu'on veut lâcher, mais on laisse l'animation se finir
+		_wants_to_drop_pickup = true
+		
+func _execute_pickup_drop() -> void:
 	_pickup_marker = null
 	is_hand_interact_active = false
+	_wants_to_drop_pickup = false
 	if is_multiplayer_authority():
 		_rpc_sync_drop_ik.rpc()
 	
@@ -1499,7 +1533,7 @@ func _respawn() -> void:
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_sync_respawn(respawn_pos: Vector3) -> void:
 	physical_bone_simulator.physical_bones_stop_simulation()
-	physical_bone_simulator.active = false
+	physical_bone_simulator.active = true
 
 	if skeleton and _pelvis_bone_idx != -1:
 		skeleton.reset_bone_pose(_pelvis_bone_idx)
@@ -1752,8 +1786,10 @@ func _update_oxygen(delta: float) -> void:
 		return
 
 	var head_submerged := false
-	var head_depth := 0.0   # 🆕 profondeur de la tête sous la surface, en mètres
-	if is_swimming and water:
+	var head_depth := 0.0
+	
+	# --- CORRECTION ICI : On supprime "is_swimming and" ---
+	if water:
 		var water_height: float = water.get_height(mouth_anchor.global_position)
 		head_depth = water_height - mouth_anchor.global_position.y
 		head_submerged = head_depth > 0.0

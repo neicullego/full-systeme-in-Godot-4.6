@@ -1,11 +1,12 @@
-#Caméra classique 
+# Caméra classique corrigée
 extends Camera3D
 
 # Le(s) matériau(x) de vos vitres de base sous-marine
 @export var glass_materials: Array[ShaderMaterial]
 
-@export var water_node: NodePath
-@onready var water = get_node(water_node)
+# --- MODIFICATION ICI : On utilise le groupe "water" comme pour le joueur ---
+@onready var water = get_tree().get_first_node_in_group("water")
+
 @onready var post_process_rect = $CanvasLayer/ColorRect
 
 # --- NOUVEAU : Glissez votre noeud de bulles (GPUParticles3D) ici dans l'inspecteur ---
@@ -38,68 +39,77 @@ func _ready() -> void:
 func _is_lens_underwater(screen_pos: Vector2, z_depth: float) -> bool:
 	var pt3d: Vector3 = project_position(screen_pos, z_depth)
 	
-# ─── Vérification sur TOUTES les zones sèches actives (Multi-Formes) ───
+	# ─── Vérification sur TOUTES les zones sèches actives (Multi-Formes) ───
 	if water and "active_dry_zones" in water:
 		for zone in water.active_dry_zones:
-			if "box_half_size" in zone and zone.box_half_size != Vector3.ZERO:
-				var local_pt: Vector3 = zone.global_transform.inverse() * pt3d
-				var z_type = zone.zone_type if "zone_type" in zone else 0
+			# --- MODIFICATION ICI : On utilise la version optimisée de la caméra joueur ---
+			var local_pt: Vector3
+			# On vérifie si la propriété précalculée existe (au cas où)
+			if "zone_inverse_transform" in zone:
+				local_pt = zone.zone_inverse_transform * pt3d
+			else:
+				# Fallback de sécurité si la propriété n'est pas encore là
+				local_pt = zone.global_transform.inverse() * pt3d
 				
-				if z_type == 0: # ─── BOX ───
-					if abs(local_pt.x) < zone.box_half_size.x and \
-					   abs(local_pt.y) < zone.box_half_size.y and \
-					   abs(local_pt.z) < zone.box_half_size.z:
-						return false 
-				elif z_type == 1: # ─── SPHERE ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dy = local_pt.y / zone.box_half_size.y
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dy*dy + dz*dz) < 1.0:
-						return false
-				elif z_type == 2: # ─── CYLINDER (Axe Y) ───
-					var dx = local_pt.x / zone.box_half_size.x
-					var dz = local_pt.z / zone.box_half_size.z
-					if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
-						return false
+			var z_type = zone.zone_type if "zone_type" in zone else 0
+			
+			if z_type == 0: # ─── BOX ───
+				if abs(local_pt.x) < zone.box_half_size.x and \
+				   abs(local_pt.y) < zone.box_half_size.y and \
+				   abs(local_pt.z) < zone.box_half_size.z:
+					return false 
+			elif z_type == 1: # ─── SPHERE ───
+				var dx = local_pt.x * (1.0 / zone.box_half_size.x)
+				var dy = local_pt.y * (1.0 / zone.box_half_size.y)
+				var dz = local_pt.z * (1.0 / zone.box_half_size.z)
+				if (dx*dx + dy*dy + dz*dz) < 1.0:
+					return false
+			elif z_type == 2: # ─── CYLINDER (Axe Y) ───
+				var dx = local_pt.x * (1.0 / zone.box_half_size.x)
+				var dz = local_pt.z * (1.0 / zone.box_half_size.z)
+				if (dx*dx + dz*dz) < 1.0 and abs(local_pt.y) < zone.box_half_size.y:
+					return false
 	# ───────────────────────────────────────────────────────────────────────
 	
 	var wave_h: float = water.get_height(pt3d)
 	return pt3d.y < wave_h
 
+# --- AJOUTE CETTE FONCTION POUR COUPER LE SON À LA SUPPRESSION ---
+func _exit_tree() -> void:
+	if has_node("Underwater_ambiance") and $Underwater_ambiance.playing:
+		$Underwater_ambiance.stop()
+
+# --- REMPLACE TOUTE TA FONCTION _process PAR CELLE-CI ---
 func _process(_delta: float) -> void:
-	# Si l'eau n'est pas encore prête dans la scène, on ne fait rien
 	if not water:
 		return
 
 	var vp: Vector2 = get_viewport().get_visible_rect().size
 	var base_z: float = 0.05
-
-	# =======================================================================
-	# ─── CODE COMMUN : EXÉCUTÉ PAR TOUT LE MONDE (Autorité + Marionnettes) ───
-	# =======================================================================
 	
-	# Détermination de l'état de la caméra (gère nativement les zones sèches)
+	# 1. On détermine l'état global de la caméra
+	var is_active_camera = is_multiplayer_authority() and is_current()
 	var cam_is_underwater: bool = _is_lens_underwater(vp / 2.0, base_z)
-	
-	if not $Underwater_ambiance.playing:
-		if cam_is_underwater:
+
+	# 2. GESTION DU SON (Placée AVANT le return pour pouvoir s'arrêter !)
+	if is_active_camera and cam_is_underwater:
+		if not $Underwater_ambiance.playing:
 			$Underwater_ambiance.play()
-	if $Underwater_ambiance.playing:
-		if not cam_is_underwater:	
+	else:
+		# Coupe le son si la caméra n'est plus active (skip) OU si on entre dans une zone sèche
+		if $Underwater_ambiance.playing:
 			$Underwater_ambiance.stop()
-	
+
+	# 3. GESTION DES BULLES
 	if bubble_particles:
-		# Gestion de l'émission globale selon la position de la caméra de chaque joueur
-		bubble_particles.emitting = cam_is_underwater
+		bubble_particles.emitting = (is_active_camera and cam_is_underwater)
 		
-		# On met à jour le shader des bulles pour qu'elles disparaissent individuellement dans les zones sèches
-		if bubble_particles.draw_pass_1:
+		if is_active_camera and bubble_particles.draw_pass_1:
 			var bubble_mat = bubble_particles.draw_pass_1.material as ShaderMaterial
 			if bubble_mat:
 				bubble_mat.set_shader_parameter("dry_zone_inverse_matrix", water.dry_zone_inverse_matrix)
 				bubble_mat.set_shader_parameter("dry_zone_half_size", water.dry_zone_half_size)
 				
-				# Synchronisation des vagues sur le shader des bulles
 				if "material_template" in water and water.material_template:
 					var w_mat = water.material_template as ShaderMaterial
 					if w_mat:
@@ -109,17 +119,19 @@ func _process(_delta: float) -> void:
 						bubble_mat.set_shader_parameter("wave_speed", w_mat.get_shader_parameter("wave_speed"))
 						bubble_mat.set_shader_parameter("wave_time", water.time)
 						bubble_mat.set_shader_parameter("water_base_y", water.global_position.y)
-	
 
-	# =======================================================================
-	# ─── CODE EXCLUSIF : UNIQUEMENT L'AUTORITÉ LOCALE (Effets d'écran) ───
-	# =======================================================================
-	if not is_multiplayer_authority():
+	# 4. BLOC DE SÉCURITÉ : On arrête les calculs lourds si la caméra est inactive
+	if not is_active_camera:
 		if post_process_rect:
 			post_process_rect.visible = false
-		return # Les autres joueurs s'arrêtent ici !
+		return
 
-	# Sécurité pour le joueur local
+	# =======================================================================
+	# ─── CODE EXCLUSIF : UNIQUEMENT L'AUTORITÉ LOCALE ET ACTIVE (Visuels) ──
+	# =======================================================================
+	if post_process_rect:
+		post_process_rect.visible = true
+		
 	if not post_process_rect or not post_process_rect.material:
 		return
 
@@ -165,6 +177,6 @@ func _process(_delta: float) -> void:
 				glass_mat.set_shader_parameter("noise_scale", w_mat.get_shader_parameter("noise_scale"))
 				glass_mat.set_shader_parameter("height_scale", w_mat.get_shader_parameter("height_scale"))
 				glass_mat.set_shader_parameter("wave_speed", w_mat.get_shader_parameter("wave_speed"))
-				
 				glass_mat.set_shader_parameter("wave_time", water.time)
 				glass_mat.set_shader_parameter("water_base_y", water.global_position.y)
+	

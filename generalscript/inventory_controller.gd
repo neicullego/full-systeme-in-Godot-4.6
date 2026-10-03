@@ -15,7 +15,7 @@ var item = null
 var _current_item_pos_offset: Vector3 = Vector3.ZERO
 var _current_item_rot_offset: Vector3 = Vector3.ZERO
 
-var item_slots_count: int = 20
+var item_slots_count: int = 9
 var inventory_slot_prefab: PackedScene = load("res://scene/ui/inventory_slot.tscn")
 
 @onready var inventory_grid: GridContainer = %GridContainer
@@ -37,23 +37,24 @@ var hand_anchor: Marker3D = null
 
 func _ready() -> void:
 	if not is_multiplayer_authority():
-		# 🟢 On garde le nœud VIVANT pour le réseau, mais on le rend totalement invisible et inerte
 		visible = false
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
-		
-		# Si le parent est un CanvasLayer, on le cache aussi pour masquer toute l'UI d'un coup
 		if get_parent() is CanvasLayer:
 			get_parent().visible = false
 		return
+		
 	for i in item_slots_count:
 		var slot = inventory_slot_prefab.instantiate() as InventorySlots
 		inventory_grid.add_child(slot)
 		inventory_slots.append(slot)
 		slot.slot_left_clicked.connect(_on_slot_left_clicked)
 		slot.slot_right_clicked.connect(_on_slot_right_clicked)
+		slot.slot_dropped.connect(_on_slot_dropped) # 🆕 Connexion du drag and drop
+
 	if clothing_slot:
 		clothing_slot.slot_left_clicked.connect(_on_slot_left_clicked)
 		clothing_slot.slot_right_clicked.connect(_on_slot_right_clicked)
+		clothing_slot.slot_dropped.connect(_on_slot_dropped) # 🆕
 
 # ── Clic gauche : équiper / déséquiper ────────────────────────────────────────
 func _on_slot_left_clicked(slot: InventorySlots) -> void:
@@ -732,3 +733,91 @@ func is_equipped_lamp_on() -> bool:
 		return false
 	var lamp = equipped_instance.get_child(0)
 	return lamp.has_method("toggle_light") and "is_on" in lamp and lamp.is_on
+
+# ── LOGIQUE D'ÉCHANGE (DRAG AND DROP) ──────────────────────────────────────────
+func _on_slot_dropped(from_slot: InventorySlots, to_slot: InventorySlots) -> void:
+	if not is_multiplayer_authority(): return
+	
+	var was_equipped = false
+	var target_re_equip = null
+	
+	# Si un des objets est actuellement en main, on le déséquipe proprement avant l'échange
+	if equipped_slot == from_slot or equipped_slot == to_slot:
+		was_equipped = true
+		target_re_equip = to_slot if equipped_slot == from_slot else from_slot
+		_unequip_item()
+		
+	# Échange des données
+	var temp_data = to_slot.item_data
+	
+	if from_slot.item_data:
+		to_slot.set_item(from_slot.item_data)
+	else:
+		to_slot.clear_slot()
+		
+	if temp_data:
+		from_slot.set_item(temp_data)
+	else:
+		from_slot.clear_slot()
+		
+	# Si on tenait l'objet en main, on rééquipe le nouveau slot où il se trouve
+	if was_equipped and target_re_equip and not target_re_equip.is_empty():
+		# Ne rééquipe pas si on a échangé un outil contre un habit (on ne tient pas les habits en main)
+		if target_re_equip.item_data.item_type != ItemData.ItemType.CLOTHING:
+			_equip_item(target_re_equip)
+
+# ── LOGIQUE DE NAVIGATION (MOLETTE ET TOUCHES 1 À 9) ──────────────────────────
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_multiplayer_authority(): return
+	
+	# On ne navigue pas dans la barre d'accès rapide si l'inventaire est ouvert
+	if is_inventory_open: return
+	
+	# Sécurité : on ne change pas d'objet si on porte un gros objet à deux mains
+	if player_node and "isCarryingObject" in player_node and player_node.isCarryingObject: return
+
+	# Détection des touches de 1 à 9 (utilisation du physical_keycode pour la compatibilité AZERTY/QWERTY)
+	if event is InputEventKey and event.pressed and not event.is_echo():
+		if event.physical_keycode >= KEY_1 and event.physical_keycode <= KEY_9:
+			var index = event.physical_keycode - KEY_1
+			if index < inventory_slots.size():
+				_switch_to_slot(index)
+
+	# Détection de la molette de la souris
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_cycle_slot(-1)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_cycle_slot(1)
+
+func _cycle_slot(direction: int) -> void:
+	var current_idx = -1
+	if equipped_slot:
+		current_idx = inventory_slots.find(equipped_slot)
+	
+	if current_idx == -1:
+		current_idx = 0 if direction > 0 else (inventory_slots.size() - 1)
+	else:
+		current_idx = (current_idx + direction) % inventory_slots.size()
+		if current_idx < 0:
+			current_idx = inventory_slots.size() - 1
+			
+	_switch_to_slot(current_idx)
+
+func _switch_to_slot(index: int) -> void:
+	var target_slot = inventory_slots[index]
+	
+	# Si on a déjà ce slot en main, on l'enlève (comme un raccourci pour ranger l'objet)
+	if target_slot == equipped_slot:
+		_unequip_item()
+		return
+		
+	# Si le joueur change de slot, on déséquipe toujours l'ancien objet en premier
+	if equipped_slot:
+		_unequip_item()
+		
+	# On équipe le nouveau slot s'il contient quelque chose
+	if not target_slot.is_empty():
+		# On ignore volontairement les habits, car ils s'équipent sur le corps, pas dans la main
+		if target_slot.item_data.item_type != ItemData.ItemType.CLOTHING:
+			_equip_item(target_slot)
