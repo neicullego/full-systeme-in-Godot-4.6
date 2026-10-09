@@ -11723,6 +11723,8 @@ collision_layer = 2
 collision_mask = 13
 wall_min_slide_angle = 0.7853982
 script = ExtResource("1_nn6hk")
+max_step_height = 0.4
+min_step_height = 0.001
 sound_metal = Array[AudioStream]([ExtResource("2_f18t6")])
 toe_left_bone_name = "mixamorig_LeftFoot"
 toe_right_bone_name = "mixamorig_RightFoot"
@@ -13461,12 +13463,12 @@ transform = Transform3D(0.01, -3.914465e-09, 5.820766e-10, 6.9849193e-10, -4.656
 shape = SubResource("CapsuleShape3D_aijgy")
 
 [node name="Physical Bone mixamorig_LeftHandIndex2" type="PhysicalBone3D" parent="Marker3D/PhysicsMan/Armature/Skeleton3D/PhysicalBoneSimulator3D" unique_id=1911167606]
-transform = Transform3D(80.09275, 19.206533, -75.50009, -26.036543, -95.45731, -51.90381, -73.42515, 54.799786, -63.951035, 44.730583, -7.9643636, -47.60672)
+transform = Transform3D(80.09275, 19.206533, -75.50009, -26.036543, -95.45731, -51.90381, -73.42515, 54.799786, -63.951035, 44.730583, -7.9266706, -47.60672)
 collision_layer = 2
 collision_mask = 5
 joint_type = 5
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0010716727, 0.0039249375, 0.0160312)
-body_offset = Transform3D(-0.102705, 111.7306, 0.50788116, 0.0027694702, 0.50790024, -111.7307, -111.73183, -0.1026783, -0.0032701492, -0.44656754, 1.7891808, 0.12019539)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0011502916, 0.004213138, 0.016187927)
+body_offset = Transform3D(-0.102705, 111.7306, 0.50788116, 0.0027694702, 0.50790024, -111.7307, -111.73183, -0.1026783, -0.0032701492, -0.47883987, 1.8065453, 0.12900972)
 bone_name = "mixamorig_LeftHandIndex2"
 joint_constraints/x/linear_limit_enabled = true
 joint_constraints/x/linear_limit_upper = 0.0
@@ -14905,12 +14907,12 @@ transform = Transform3D(0.01, 1.1641532e-10, 9.313226e-10, -2.5029294e-09, 4.656
 shape = SubResource("CapsuleShape3D_bku7a")
 
 [node name="Physical Bone mixamorig_RightToeBase" type="PhysicalBone3D" parent="Marker3D/PhysicsMan/Armature/Skeleton3D/PhysicalBoneSimulator3D" unique_id=1520825159]
-transform = Transform3D(-1.2960361, -1.865249, -111.708755, 109.269554, -23.310883, -0.87850505, -23.291397, -109.25717, 2.094539, 8.074846, 23.312061, 46.377808)
+transform = Transform3D(-1.2960361, -1.865249, -111.708755, 109.269554, -23.310883, -0.87850505, -23.291397, -109.25717, 2.094539, 8.074846, 23.357357, 46.377808)
 collision_layer = 2
 collision_mask = 5
 joint_type = 5
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13074403, 0.027718931, 0.034527946)
-body_offset = Transform3D(111.73154, 0.009386063, -0.01446569, -0.014635146, -0.0016351193, -111.731316, -0.009277344, 111.731804, -0.0013945699, 14.608471, 3.8559852, -3.0982513)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13114049, 0.027803572, 0.034531135)
+body_offset = Transform3D(111.73154, 0.009386063, -0.01446569, -0.014635146, -0.0016351193, -111.731316, -0.009277344, 111.731804, -0.0013945699, 14.652767, 3.8563356, -3.1077118)
 bone_name = "mixamorig_RightToeBase"
 joint_constraints/x/linear_limit_enabled = true
 joint_constraints/x/linear_limit_upper = 0.0
@@ -15128,7 +15130,6 @@ replication_interval = 0.033
 replication_config = SubResource("SceneReplicationConfig_wrh0d")
 
 [node name="InteractionIndicator" parent="." unique_id=865045235 instance=ExtResource("17_7p38m")]
-height_offset = 0.0
 
 [node name="proximity_chat" type="AudioStreamPlayer3D" parent="." unique_id=1384940884]
 process_mode = 3

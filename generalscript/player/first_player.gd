@@ -1,5 +1,16 @@
 extends CharacterBody3D
 
+@export_group("Marches")
+@export var enable_step_climb: bool = true
+## Hauteur maximale d'une marche franchissable (m)
+@export var max_step_height: float = 0.3
+## En dessous de cette hauteur, la capsule glisse toute seule (m)
+@export var min_step_height: float = 0.02
+
+var _step_hit := KinematicCollision3D.new()
+var _step_down := KinematicCollision3D.new()
+var _stepped_last_frame: bool = false
+
 var _wants_to_drop_pickup: bool = false
 
 @onready var ik_toe_left:  Node = $Marker3D/PhysicsMan/Armature/Skeleton3D/TwoBoneIK_PiedGauche
@@ -621,7 +632,7 @@ func _physics_process(delta: float) -> void:
 
 		# --- 3. GESTION DES ETATS ET VITESSE ---
 		# ── SYSTÈME DE CROUCH + DÉTECTION PLAFOND ───────────────────────────────
-		var _is_pressing_crouch := Input.is_action_pressed("ui_crouch") and not is_swimming
+		var _is_pressing_crouch := Input.is_action_pressed("ui_crouch") and (not is_swimming or wearing_heavy_suit)
 		
 		# Détecte le moment EXACT où le joueur relâche le bouton (tentative de relevé)
 		if is_crouching != _is_pressing_crouch:
@@ -651,6 +662,8 @@ func _physics_process(delta: float) -> void:
 		if is_swimming: current_speed = SWIM_SPEED 
 		if wearing_heavy_suit and is_swimming:
 			current_speed = WALK_SPEED
+		if is_crouching:
+			current_speed = CROUCH_SPEED
 
 		# Swap des collisions
 		# Swap des collisions
@@ -728,7 +741,7 @@ func _physics_process(delta: float) -> void:
 				velocity.y = lerp(velocity.y, 0.0, 5.0 * delta)
 				
 		_update_oxygen(delta)
-
+		_try_step_up(delta)
 		move_and_slide()
 		update_animations(input_dir, is_running, is_moving, is_crouching, is_swimming and not wearing_heavy_suit, delta)
 		
@@ -2161,3 +2174,78 @@ func _ignore_self_collisions(node: Node) -> void:
 		# Récursion pour s'assurer de trouver les nœuds imbriqués (ex: dans CameraPivot)
 		if child.get_child_count() > 0:
 			_ignore_self_collisions(child)
+
+## Aide la capsule à monter les petites marches. À appeler juste avant move_and_slide().
+func _try_step_up(delta: float) -> void:
+	var was_stepping := _stepped_last_frame
+	_stepped_last_frame = false
+
+	if not enable_step_climb:
+		return
+	if not (is_on_floor() or was_stepping) or velocity.y > 0.1:
+		return
+	if is_swimming and not wearing_heavy_suit:
+		return
+
+	var horizontal_velocity := Vector3(velocity.x, 0.0, velocity.z)
+	if horizontal_velocity.length() < 0.3:
+		return
+	var motion := horizontal_velocity * delta
+	var dir := horizontal_velocity.normalized()
+
+	# 1. Un obstacle bloque-t-il vraiment le pas de cette frame ?
+	if not test_move(global_transform, motion, _step_hit):
+		return
+	if _step_hit.get_normal().angle_to(Vector3.UP) <= floor_max_angle:
+		return   # simple pente : move_and_slide() s'en charge
+	if not _can_step_on(_step_hit.get_collider()):
+		return
+
+	# 2. Y a-t-il de la place au-dessus de nous ? (pas de plafond bas)
+	var up := Vector3.UP * max_step_height
+	if test_move(global_transform, up):
+		return
+	var above := global_transform
+	above.origin += up
+
+	# 3. Une fois à hauteur de marche, peut-on avancer ? Sinon c'est un mur.
+	if test_move(above, motion):
+		return
+	above.origin += motion
+
+	# 4. On redescend pour mesurer la hauteur réelle de la marche
+	if not test_move(above, -up, _step_down):
+		return   # pas de sol devant : c'est un trou
+	var rise: float = max_step_height - _step_down.get_travel().length()
+	if rise < min_step_height:
+		return
+	if not _can_step_on(_step_down.get_collider()):
+		return
+	# L'origine du joueur est aux pieds : le dessus de la marche ne doit pas dépasser la limite
+	if _step_down.get_position().y - global_position.y > max_step_height:
+		return
+
+	# 5. Le dessus de la marche doit être un vrai sol (pas une pente raide)
+	var ray_from := _step_down.get_position() + dir * 0.05 + Vector3.UP * 0.1
+	var query := PhysicsRayQueryParameters3D.create(ray_from, ray_from + Vector3.DOWN * 0.3, collision_mask)
+	query.exclude = [get_rid()]
+	var result := get_world_3d().direct_space_state.intersect_ray(query)
+	if result.is_empty():
+		return
+	var top_normal: Vector3 = result["normal"]
+	if top_normal.angle_to(Vector3.UP) > floor_max_angle or not _can_step_on(result["collider"]):
+		return
+
+	# 6. On monte
+	var step_margin := 0.1 # Marge de sécurité de 3 cm au-dessus du sol
+	global_position = above.origin + _step_down.get_travel() + Vector3.UP * step_margin
+	velocity.y = 0.0
+	
+	# On inclut la marge dans le décalage de la caméra pour éviter tout à-coup visuel
+	camera_pivot.position.y -= (rise + step_margin)
+	_stepped_last_frame = true
+
+
+## On ne monte pas sur les objets physiques (caisses portées, portes, autres joueurs)
+func _can_step_on(collider: Object) -> bool:
+	return not (collider is RigidBody3D or collider is CharacterBody3D)
