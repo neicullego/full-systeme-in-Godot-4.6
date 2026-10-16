@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+@onready var tutorial_ui: TutorialUI = $InventoryController/CanvasLayer/TutorialUI
+
 @export_group("Marches")
 @export var enable_step_climb: bool = true
 ## Hauteur maximale d'une marche franchissable (m)
@@ -2270,3 +2272,10 @@ func _try_step_up(delta: float) -> void:
 ## On ne monte pas sur les objets physiques (caisses portées, portes, autres joueurs)
 func _can_step_on(collider: Object) -> bool:
 	return not (collider is RigidBody3D or collider is CharacterBody3D)
+
+
+func display_tutorial(text: String, icon: Texture2D, action_name: String, auto_hide_delay: float) -> void:
+	if not is_multiplayer_authority():
+		return
+	if tutorial_ui:
+		tutorial_ui.show_tutorial(text, icon, action_name, auto_hide_delay)

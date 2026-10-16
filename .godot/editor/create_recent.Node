@@ -1,6 +1,8 @@
+TextureRect
+Label
+Panel
 AudioStreamPlayer3D
 HSlider
-Label
 OptionButton
 LookAtModifier3D
 TwoBoneIK3D
@@ -11,5 +13,3 @@ SpotLight3D
 CollisionShape3D
 StaticBody3D
 MeshInstance3D
-Area3D
-RayCast3D
